@@ -15,7 +15,7 @@ pipeline {
           steps {
                git branch: 'master',
                credentialsId: '',
-               url: ''
+               url: 'https://gitlab.com/210301-java-azure/p2-revengers/revature-max-backend.git'
            }
       }
       stage('clean') {
