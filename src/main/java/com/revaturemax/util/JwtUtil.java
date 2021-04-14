@@ -25,8 +25,8 @@ public class JwtUtil {
     // token is returned to the client and stored in session storage.
     public String generateToken(Employee emp) {
         String token = Jwts.builder().setIssuedAt(new Date(System.currentTimeMillis()))
-                .setAudience(emp.getRole().toString())
-                .setSubject(emp.getId().toString())
+                .setId(emp.getId().toString())
+                .setSubject(emp.getRole().toString())
                 .signWith(key).compact();
         logger.info("Token was generated and is being returned to the client");
         logger.info(token);
@@ -37,12 +37,18 @@ public class JwtUtil {
     // this method authenticates an employee by comparing the path parameter id to the JWT
     // returns true or false depending on the "==" conditional statement evaluation
     public boolean authorizeEmployee(String token, long id) {
-        String subject = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
+        String jwtId = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getId();
         logger.info("Employee is being authenticated by JWT");
 
-        long subId = Long.parseLong(subject);
+        if(jwtId.matches("^\\d+$")){
+            long check = Long.parseLong(jwtId);
 
-        return subId == id;
+            logger.info(id+"?==?"+check);
+
+            return check==id;
+        }
+        return false;
+
     }
 
 

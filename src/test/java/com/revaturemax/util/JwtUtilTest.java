@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class JwtUtilTest {
 
-    private final Employee emp = new Employee(1, Role.INSTRUCTOR, "trainerTest", "trainerTest@revature.net");
+    private final Employee emp = new Employee(5, Role.INSTRUCTOR, "trainerTest", "trainerTest@revature.net");
 
     private final JwtUtil jwtUtil = new JwtUtil();
 
