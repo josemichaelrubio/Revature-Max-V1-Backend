@@ -26,6 +26,13 @@ public class Employee {
         this.email = email;
     }
 
+    public Employee(long id, Role role, String name, String email) {
+        this.id = id;
+        this.role = role;
+        this.name = name;
+        this.email = email;
+    }
+
     public Long getId() {
         return id;
     }

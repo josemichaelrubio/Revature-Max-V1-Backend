@@ -19,3 +19,5 @@ f
 .src/main/java/com/revaturemax/model/Notes.java,5\b\5b49e6748a6e8b34651c6152f3b4aad6a3379777
 _
 /src/main/java/com/revaturemax/util/JwtUtil.java,a\b\ab792ccfaaeb9b609dd4c41501962ad49f23c885
+a
+1src/main/java/com/revaturemax/model/Employee.java,d\9\d93b147a756db0735dd62e1e2ebebee997ee0d67
