@@ -1,5 +1,6 @@
 package com.revaturemax.controllers;
 
+import com.revaturemax.dto.TopicRequest;
 import com.revaturemax.model.Topic;
 import com.revaturemax.services.TopicService;
 import org.apache.logging.log4j.LogManager;
@@ -18,10 +19,16 @@ public class TopicController {
     private TopicService topicService;
 
     @PostMapping
-    public Topic postNewTopic(@RequestBody Topic topic){
+    public Topic postNewTopic(@RequestBody TopicRequest topic){
         //authenticate instructor
         logger.info("Instructor creating new topic");
-        return topicService.postNewTopic(topic);
+        return topicService.create(topic);
     }
+
+    /*
+     * Put mapping for /topics
+     * Designed for updating individual topics
+     * @param Topic DTO containing tag and assigned date.
+     */
 
 }

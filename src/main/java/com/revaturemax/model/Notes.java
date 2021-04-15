@@ -1,9 +1,14 @@
 package com.revaturemax.model;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
+@Component
+@Scope("prototype")
 public class Notes {
 
     @Id

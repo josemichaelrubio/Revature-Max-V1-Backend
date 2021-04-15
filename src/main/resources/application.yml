@@ -2,6 +2,9 @@ server:
   port: 8082
 
 spring:
+  devtools:
+    restart:
+      enabled: true
   datasource:
     url: ${DB_URL}
     username: ${DB_USER}
