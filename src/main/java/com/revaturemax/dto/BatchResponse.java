@@ -19,6 +19,14 @@ public class BatchResponse implements Serializable {
         this.competencyAverage = competencyAverage;
     }
 
+    public void addQuizAverage(String quizName, double average) {
+        this.quizAverage.add(new QuizAverage(quizName, average));
+    }
+
+    public void addCompetancyAverage(String topicName, double average) {
+        this.competencyAverage.add(new CompetencyAverage(topicName, average));
+    }
+
     public Batch getBatch() {
         return batch;
     }
