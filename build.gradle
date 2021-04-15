@@ -38,6 +38,7 @@ task fatJar(type: Jar) {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.10.3'
     implementation 'com.microsoft.sqlserver:mssql-jdbc:9.2.1.jre8'
     implementation 'org.hibernate:hibernate-core:5.4.30.Final'
