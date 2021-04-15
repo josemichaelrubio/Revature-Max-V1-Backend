@@ -3,6 +3,8 @@ package com.revaturemax.util;
 import com.revaturemax.model.Employee;
 import com.revaturemax.model.Role;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,11 +16,13 @@ class JwtUtilTest {
 
     private final JwtUtil jwtUtil = new JwtUtil();
 
+    private final Logger logger = LoggerFactory.getLogger(JwtUtilTest.class);
+
     @Test
     void jwtGeneratorTest(){
         String token = jwtUtil.generateToken(emp);
-        System.out.println("Generating a test token");
-        System.out.println(token);
+        logger.info("Generating a test token");
+        logger.info(token);
         assertNotNull(token);
 
     }
@@ -26,9 +30,23 @@ class JwtUtilTest {
     @Test
     void jwtAuthenticationTest(){
         String token = jwtUtil.generateToken(emp);
-        System.out.println("Generating a test token to check id authorization method");
-        System.out.println(token+emp.getId());
+        logger.info("Generating a test token to check id authorization method");
+        logger.info(token+emp.getId());
         assertTrue(jwtUtil.authorizeEmployee(token, emp.getId()));
+    }
+
+    @Test
+    void jwtReturnIdTest(){
+        String token = jwtUtil.generateToken(emp);
+        logger.info("Generating a test token to parse and return employee ID");
+        assertEquals(5, jwtUtil.getIdFromToken(token));
+    }
+
+    @Test
+    void jwtReturnRoleTest(){
+        String token = jwtUtil.generateToken(emp);
+        logger.info("Generating a test token to parse and return employee role");
+        assertEquals(Role.INSTRUCTOR, jwtUtil.getRoleFromToken(token));
     }
 
 

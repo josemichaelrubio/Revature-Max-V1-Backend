@@ -1,6 +1,7 @@
 package com.revaturemax.util;
 
 import com.revaturemax.model.Employee;
+import com.revaturemax.model.Role;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.slf4j.Logger;
@@ -48,6 +49,29 @@ public class JwtUtil {
             return check==id;
         }
         return false;
+
+    }
+
+    // this method parses the JWT token and returns the long employee ID
+    public long getIdFromToken(String token){
+        String jwtId = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getId();
+        logger.info("Retrieving employee ID from JWT");
+        return Long.parseLong(jwtId);
+
+    }
+
+    // this method parses the JWT token and returns the long employee ID
+    public Role getRoleFromToken(String token){
+        String jwtRole = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
+        logger.info("Retrieving employee role from JWT");
+        switch (jwtRole){
+            case "INSTRUCTOR":
+                return Role.INSTRUCTOR;
+            case "ASSOCIATE":
+                return Role.ASSOCIATE;
+            default:
+                return null;
+        }
 
     }
 
