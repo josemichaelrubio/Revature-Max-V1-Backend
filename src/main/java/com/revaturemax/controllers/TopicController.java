@@ -1,14 +1,17 @@
 package com.revaturemax.controllers;
 
 import com.revaturemax.dto.TopicRequest;
+import com.revaturemax.dto.TopicUpdateRequest;
 import com.revaturemax.model.Topic;
 import com.revaturemax.model.TopicTag;
 import com.revaturemax.services.TopicService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @CrossOrigin
@@ -20,10 +23,16 @@ public class TopicController {
     @Autowired
     private TopicService topicService;
 
+    @GetMapping("/tags")
+    public ResponseEntity<List<TopicTag>> getTopicTags(){
+        return ResponseEntity.ok().body(topicService.getTopicTags());
+    }
+
 
     @PostMapping("/tags")
     public ResponseEntity<TopicTag> postNewTopicTag(@RequestBody String tagName){
-        return ResponseEntity.ok().body(topicService.createTag(tagName));
+        TopicTag tag = topicService.createTag(tagName);
+        return new ResponseEntity<>(tag, HttpStatus.CREATED);
     }
 
 
@@ -34,10 +43,11 @@ public class TopicController {
      */
 
     @PostMapping
-    public ResponseEntity<Topic> postNewTopic(@RequestBody Topic topic){
+    public ResponseEntity<Topic> postNewTopic(@RequestBody TopicRequest topic){
         //authenticate instructor
         logger.info("Instructor creating new topic");
-        return ResponseEntity.ok().body(topicService.create(topic));
+        Topic newTopic = topicService.create(topic);
+        return new ResponseEntity<>(newTopic, HttpStatus.CREATED);
     }
 
     /*
@@ -47,7 +57,7 @@ public class TopicController {
      */
 
     @PutMapping
-    public ResponseEntity<Topic> updateTopic(@RequestBody TopicRequest topic){
+    public ResponseEntity<Topic> updateTopic(@RequestBody TopicUpdateRequest topic){
         //authenticate instructor
         logger.info("Instructor creating new topic");
         return ResponseEntity.ok().body(topicService.update(topic));

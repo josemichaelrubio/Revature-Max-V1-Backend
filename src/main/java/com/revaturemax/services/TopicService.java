@@ -2,6 +2,7 @@ package com.revaturemax.services;
 
 
 import com.revaturemax.dto.TopicRequest;
+import com.revaturemax.dto.TopicUpdateRequest;
 import com.revaturemax.model.Batch;
 import com.revaturemax.model.CurriculumDay;
 import com.revaturemax.model.Topic;
@@ -12,6 +13,8 @@ import com.revaturemax.repositories.TopicRepository;
 import com.revaturemax.repositories.TopicTagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class TopicService{
@@ -32,15 +35,18 @@ public class TopicService{
         return topicTagRepository.save(new TopicTag(tag));
     }
 
+    public List<TopicTag> getTopicTags(){
+        return topicTagRepository.findAll();
+    }
 
-
-    public Topic create(Topic topic){
-        return topicRepository.save(topic);
+    public Topic create(TopicRequest topic){
+        Topic newTopic = new Topic(topic.getTag(), topic.getTopicName());
+        return topicRepository.save(newTopic);
     }
 
 
 
-    public Topic update(TopicRequest topic){
+    public Topic update(TopicUpdateRequest topic){
         TopicTag topicTag = topicTagRepository.findByName(topic.getTopicTagName());
         if(topicTag!=null){
             Topic newTopic = new Topic(topicTag, topic.getTopicName());
