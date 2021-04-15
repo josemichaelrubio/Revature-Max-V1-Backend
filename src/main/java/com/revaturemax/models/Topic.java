@@ -1,21 +1,25 @@
-package com.revaturemax.model;
+package com.revaturemax.models;
 
 import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-public class TopicTag {
+public class Topic {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
+    @OneToOne
+    @JoinColumn(name = "topic_tag_id")
+    private TopicTag tag;
+
     private String name;
 
-    public TopicTag() {}
+    public Topic() {}
 
-    public TopicTag(String name) {
+    public Topic(TopicTag tag, String name) {
+        this.tag = tag;
         this.name = name;
     }
 
@@ -25,6 +29,14 @@ public class TopicTag {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public TopicTag getTag() {
+        return tag;
+    }
+
+    public void setTag(TopicTag tag) {
+        this.tag = tag;
     }
 
     public String getName() {
@@ -39,13 +51,13 @@ public class TopicTag {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        TopicTag topicTag = (TopicTag) o;
-        return Objects.equals(name, topicTag.name);
+        Topic topic = (Topic) o;
+        return Objects.equals(tag, topic.tag) && name.equals(topic.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return Objects.hash(tag, name);
     }
 
 }

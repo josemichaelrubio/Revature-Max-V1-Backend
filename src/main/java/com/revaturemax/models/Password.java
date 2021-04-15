@@ -1,4 +1,4 @@
-package com.revaturemax.model;
+package com.revaturemax.models;
 
 import javax.persistence.*;
 import java.util.Arrays;

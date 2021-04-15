@@ -1,4 +1,4 @@
-package com.revaturemax.model;
+package com.revaturemax.models;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -6,19 +6,19 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @Embeddable
-public class EmployeeQuizId implements Serializable {
+public class EmployeeTopicId implements Serializable {
 
     @Column(name = "employee_id")
     private Long employeeId;
 
-    @Column(name = "quiz_id")
-    private Long quizId;
+    @Column(name = "topic_id")
+    private Long topicId;
 
-    public EmployeeQuizId() {}
+    public EmployeeTopicId() {}
 
-    public EmployeeQuizId(Long employeeId, Long quizId) {
+    public EmployeeTopicId(Long employeeId, Long topicId) {
         this.employeeId = employeeId;
-        this.quizId = quizId;
+        this.topicId = topicId;
     }
 
     public Long getEmployeeId() {
@@ -29,25 +29,25 @@ public class EmployeeQuizId implements Serializable {
         this.employeeId = employeeId;
     }
 
-    public Long getQuizId() {
-        return quizId;
+    public Long getTopicId() {
+        return topicId;
     }
 
-    public void setQuizId(Long quizId) {
-        this.quizId = quizId;
+    public void setTopicId(Long topicId) {
+        this.topicId = topicId;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        EmployeeQuizId that = (EmployeeQuizId) o;
-        return employeeId.equals(that.employeeId) && quizId.equals(that.quizId);
+        EmployeeTopicId that = (EmployeeTopicId) o;
+        return employeeId.equals(that.employeeId) && topicId.equals(that.topicId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(employeeId, quizId);
+        return Objects.hash(employeeId, topicId);
     }
 
 }
