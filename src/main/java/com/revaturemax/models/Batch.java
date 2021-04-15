@@ -34,6 +34,12 @@ public class Batch {
         this.description = description;
     }
 
+    public Batch(String name, String description, Employee instructor) {
+        this.name = name;
+        this.description = description;
+        this.instructor = instructor;
+    }
+
     public Long getId() {
         return id;
     }
