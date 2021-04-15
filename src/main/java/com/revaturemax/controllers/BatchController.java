@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.xml.ws.Response;
+
 @RestController
 @RequestMapping("/batches")
 @CrossOrigin
@@ -31,9 +33,9 @@ public class BatchController {
      *
      ***********************************************************************************************/
     @GetMapping(value = "/{batch-id}", produces ="application/json")
-    public BatchSummary getBatchInfoById(@PathVariable("batch-id") Long id) {
+    public ResponseEntity<BatchSummary> getBatchInfoById(@PathVariable("batch-id") Long id) {
         logger.info("Getting batch with id: " + id);
-        return batchService.getBasicBatchInfo(id);
+        return ResponseEntity.ok(batchService.getBasicBatchInfo(id));
     }
 
 
