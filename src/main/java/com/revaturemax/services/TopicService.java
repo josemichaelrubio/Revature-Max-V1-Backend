@@ -31,19 +31,28 @@ public class TopicService{
     @Autowired
     CurriculumDayRepository curriculumDayRepo;
 
-    public TopicTag createTag(String tag){
-        return topicTagRepository.save(new TopicTag(tag));
+    // all '/tags' methods are implemented for testing features
+
+    public TopicTag createTag(TopicTag tag){
+        return topicTagRepository.save(new TopicTag(tag.getName()));
+    }
+
+    public void deleteTag(long id){
+        topicTagRepository.deleteById(id);
     }
 
     public List<TopicTag> getTopicTags(){
         return topicTagRepository.findAll();
     }
 
+
+    // Topic CRUD methods in the service layer
+
+
     public Topic create(TopicRequest topic){
         Topic newTopic = new Topic(topic.getTag(), topic.getTopicName());
         return topicRepository.save(newTopic);
     }
-
 
 
     public Topic update(TopicUpdateRequest topic){

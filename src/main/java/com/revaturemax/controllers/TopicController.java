@@ -23,16 +23,24 @@ public class TopicController {
     @Autowired
     private TopicService topicService;
 
+
+    // all '/tags' methods are implemented for testing features
+
     @GetMapping("/tags")
     public ResponseEntity<List<TopicTag>> getTopicTags(){
         return ResponseEntity.ok().body(topicService.getTopicTags());
     }
 
-
     @PostMapping("/tags")
-    public ResponseEntity<TopicTag> postNewTopicTag(@RequestBody String tagName){
-        TopicTag tag = topicService.createTag(tagName);
-        return new ResponseEntity<>(tag, HttpStatus.CREATED);
+    public ResponseEntity<TopicTag> postNewTopicTag(@RequestBody TopicTag tag){
+        TopicTag newTag = topicService.createTag(tag);
+        return new ResponseEntity<>(newTag, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/tags/{id}")
+    public ResponseEntity<HttpStatus> deleteTopicTag(@PathVariable long id){
+        topicService.deleteTag(id);
+        return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
 
