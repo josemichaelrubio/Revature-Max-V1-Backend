@@ -23,6 +23,10 @@ public class Topic {
 
     public Topic() {}
 
+    public Topic(String name){
+        this.name=name;
+    }
+
     public Topic(TopicTag tag, String name) {
         this.tag = tag;
         this.name = name;
