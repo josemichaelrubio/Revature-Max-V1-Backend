@@ -1,11 +1,15 @@
 package com.revaturemax.dto;
 
 import com.revaturemax.models.Batch;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
+@Component
+@Scope("prototype")
 public class BatchResponse implements Serializable {
     private Batch batch;
     private List<QuizAverage> quizAverage;
@@ -23,7 +27,7 @@ public class BatchResponse implements Serializable {
         this.quizAverage.add(new QuizAverage(quizName, average));
     }
 
-    public void addCompetancyAverage(String topicName, double average) {
+    public void addCompetencyAverage(String topicName, double average) {
         this.competencyAverage.add(new CompetencyAverage(topicName, average));
     }
 
@@ -73,7 +77,8 @@ public class BatchResponse implements Serializable {
                 '}';
     }
 
-    private class QuizAverage implements Serializable {
+    @Component
+    private static class QuizAverage implements Serializable {
         private String quizName;
         private double average;
 
@@ -122,7 +127,8 @@ public class BatchResponse implements Serializable {
         }
     }
 
-    private class CompetencyAverage implements Serializable {
+    @Component
+    private static class CompetencyAverage implements Serializable {
 
         private String topicName;
         private double average;
