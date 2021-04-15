@@ -1,20 +1,13 @@
 package com.revaturemax.service;
 
 import com.revaturemax.dto.TopicResponse;
-import com.revaturemax.model.Employee;
-import com.revaturemax.model.EmployeeTopic;
-import com.revaturemax.model.Notes;
-import com.revaturemax.model.Topic;
-import com.revaturemax.repository.BatchRepository;
-import com.revaturemax.repository.EmployeeTopicRepository;
-import com.revaturemax.repository.TopicRepository;
+import com.revaturemax.model.*;
+import com.revaturemax.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class TopicService {
@@ -22,26 +15,49 @@ public class TopicService {
     @Autowired
     TopicRepository topicRepository;
     @Autowired
-    NotesRepository notesRepository;
+    BatchRepository batchRepository;
     @Autowired
     EmployeeTopicRepository employeeTopicRepository;
     @Autowired
-    BatchRepository batchRepository;
+    NotesRepository notesRepository;
 
     public TopicResponse getTopic(long batchId, long topicId) {
-        TopicResponse topicResponse = null;
+        long employeeId = 1; //TODO: pull id from JWT or passed as param
         Topic topic = topicRepository.getTopicById(topicId);
-        //if null, throw 404
-        long employeeId = 1;
-        EmployeeTopic et = employeeTopicRepository.getEmployeeTopicById(employeeId, topicId);
-        Float competency = et.getCompetency();
-        Notes starred = et.getFavNotes();
-        topicResponse = new TopicResponse(topic, competency);
+        if (topic == null) {
+            return null; //TODO: throw 404
+        }
 
+        /* Prepare response with the topic and employee's competency rating */
+        Float competency = null;
+        Notes starredNotes = null;
+        EmployeeTopic et = employeeTopicRepository.getEmployeeTopicById(new EmployeeTopicId(employeeId, topicId));
+        if (et != null) {
+            competency = et.getCompetency();
+            starredNotes = et.getFavNotes();
+        }
+        TopicResponse topicResponse = new TopicResponse(topic, competency);
+
+        /* Prepare response with notes list */
         Map<Notes, Integer> timesStarred = new HashMap<>();
         for (Employee associate : batchRepository.getBatchById(batchId).getAssociates()) {
-            et = employeeTopicRepository.getEmployeeTopicById(associate.getId(), topicId);
+            Notes notes = notesRepository.getNotesByEmployeeIdAndTopicId(associate.getId(), topicId);
+            if (notes != null && !timesStarred.containsKey(notes)) {
+                timesStarred.put(notes, 0);
+            }
+            et = employeeTopicRepository.getEmployeeTopicById(new EmployeeTopicId(associate.getId(), topicId));
+            if (et != null && et.getFavNotes() != null) {
+                timesStarred.put(et.getFavNotes(), timesStarred.getOrDefault(et.getFavNotes(), 0) + 1);
+            }
         }
+        for (Map.Entry<Notes, Integer> entry : timesStarred.entrySet()) {
+            Notes notes = entry.getKey();
+            topicResponse.addNotesDetails(notes.getEmployee(), notes.equals(starredNotes),
+                    entry.getValue(), notes.getNotes());
+        }
+        topicResponse.sortNotes();
+
         return topicResponse;
     }
+
 }

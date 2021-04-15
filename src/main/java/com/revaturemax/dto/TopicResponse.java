@@ -42,6 +42,18 @@ public class TopicResponse {
         }
     }
 
+    public Topic getTopic() {
+        return topic;
+    }
+
+    public Float getCompetency() {
+        return competency;
+    }
+
+    public List<NotesDetails> getNotes() {
+        return notes;
+    }
+
     private class NotesDetails {
 
         private Employee employee;
@@ -56,8 +68,20 @@ public class TopicResponse {
             this.content = content;
         }
 
+        public Employee getEmployee() {
+            return employee;
+        }
+
+        public boolean isStarred() {
+            return starred;
+        }
+
         public int getTimesStarred() {
             return timesStarred;
+        }
+
+        public String getContent() {
+            return content;
         }
 
     }

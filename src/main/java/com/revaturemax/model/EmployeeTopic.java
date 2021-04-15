@@ -18,7 +18,7 @@ public class EmployeeTopic {
     @MapsId("topicId")
     private Topic topic;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "fav_notes_id")
     private Notes favNotes;
 

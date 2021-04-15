@@ -10,11 +10,11 @@ public class Notes {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "employee_id")
     private Employee employee;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "topic_id")
     private Topic topic;
 
@@ -66,13 +66,12 @@ public class Notes {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Notes notes1 = (Notes) o;
-        return Objects.equals(employee, notes1.employee) && Objects.equals(topic, notes1.topic) &&
-                Objects.equals(notes, notes1.notes);
+        return Objects.equals(employee, notes1.employee) && Objects.equals(topic, notes1.topic);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(employee, topic, notes);
+        return Objects.hash(employee, topic);
     }
 
 }

@@ -16,7 +16,7 @@ public class Batch {
 
     private String description;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @JoinColumn(name = "instructor_id")
     private Employee instructor;
 

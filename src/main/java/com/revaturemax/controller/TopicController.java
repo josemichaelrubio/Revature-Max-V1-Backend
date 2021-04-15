@@ -1,6 +1,5 @@
 package com.revaturemax.controller;
 
-import com.revaturemax.dto.TopicResponse;
 import com.revaturemax.service.TopicService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,12 +16,5 @@ public class TopicController {
     @Autowired
     private TopicService topicService;
 
-    @GetMapping(value = "/{topic-id}", produces = "application/json")
-    public TopicResponse getTopic(@PathVariable("topic-id") long topicId) {
-        //authenticate token
-        logger.info("GET topics/{} received", topicId);
-        long batchId = 1;
-        return topicService.getTopic(batchId, topicId);
-    }
 
 }

@@ -10,7 +10,7 @@ public class Topic {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "topic_tag_id")
     private TopicTag tag;
 
@@ -52,12 +52,12 @@ public class Topic {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Topic topic = (Topic) o;
-        return Objects.equals(tag, topic.tag) && name.equals(topic.name);
+        return name.equals(topic.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(tag, name);
+        return Objects.hash(name);
     }
 
 }
