@@ -29,6 +29,10 @@ public class Batch {
 
     public Batch() {}
 
+    public Batch(long id) {
+        this.id = id;
+    }
+
     public Batch(String name, String description) {
         this.name = name;
         this.description = description;

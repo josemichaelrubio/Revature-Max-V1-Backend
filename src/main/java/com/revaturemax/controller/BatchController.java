@@ -4,6 +4,7 @@ import com.revaturemax.dto.TopicResponse;
 import com.revaturemax.model.CurriculumDay;
 import com.revaturemax.model.Quiz;
 import com.revaturemax.service.BatchService;
+import com.revaturemax.service.QuizService;
 import com.revaturemax.service.TopicService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,6 +24,9 @@ public class BatchController {
     private BatchService batchService;
 
     @Autowired
+    private QuizService quizService;
+
+    @Autowired
     private TopicService topicService;
 
     @GetMapping(value = "/{batch-id}/curriculum", produces = "application/json")
@@ -33,30 +37,22 @@ public class BatchController {
         return null;
     }
 
-    /**
-    //@PostMapping(value = "/{batch-id}/curriculum", produces = "application/json")
-    public CurriculumDay postCurriculum(@PathVariable("batch-id") long batchId,
-                                        //@RequestBody CurriculumDay curriculumDay) {
-        //TODO
-        return null;
-    }*/
-
     @PostMapping(value = "/{batch-id}/quizzes")
     public void postQuiz(@PathVariable("batch-id") long batchId,
                          @RequestBody Quiz quiz) {
         //TODO - authenticate token
         logger.info("POST /batches/{}/quizzes received", batchId);
-        //TODO - implement
+        quizService.setNewQuiz(batchId, quiz);
     }
 
-    //put or patch...
     @PutMapping(value = "/{batch-id}/quizzes/{quiz-id}")
     public void putQuiz(@PathVariable("batch-id") long batchId,
                         @PathVariable("quiz-id") long quizId,
                         @RequestBody Quiz quiz) {
         //TODO - authenticate token
+        //quiz-id = quiz.getId check?
         logger.info("PUT /batches/{}/quizzes/{} received", batchId, quizId);
-        //TODO - implement
+        quizService.updateQuiz(batchId, quiz);
     }
 
     @DeleteMapping(value = "/{batch-id}/quizzes/{quiz-id}")
@@ -64,7 +60,7 @@ public class BatchController {
                            @PathVariable("quiz-id") long quizId) {
         //TODO - authenticate token
         logger.info("DELETE /batches/{}/quizzes/{} received", batchId, quizId);
-        //TODO - implement
+        quizService.removeQuiz(batchId, quizId);
     }
 
     @GetMapping(value = "/{batch-id}/topics/{topic-id}", produces = "application/json")
