@@ -1,12 +1,16 @@
 package com.revaturemax.dto;
 
-import com.revaturemax.model.Employee;
-import com.revaturemax.model.Topic;
+import com.revaturemax.models.Employee;
+import com.revaturemax.models.Topic;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+@Component
+@Scope("prototype")
 public class TopicResponse {
 
     private Topic topic;

@@ -2,6 +2,12 @@ server:
   port: 8082
 
 spring:
+  jackson:
+    serialization:
+      FAIL_ON_EMPTY_BEANS: false
+  devtools:
+    restart:
+      enabled: true
   datasource:
     url: ${DB_URL}
     username: ${DB_USER}
