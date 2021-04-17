@@ -1,4 +1,8 @@
-package com.revaturemax.model;
+package com.revaturemax.models;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -6,6 +10,10 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
+@Table(name="batch")
+@Component
+@JsonIgnoreProperties("hibernateLazyInitializer")
+@Scope("prototype")
 public class Batch {
 
     @Id
@@ -32,6 +40,12 @@ public class Batch {
     public Batch(String name, String description) {
         this.name = name;
         this.description = description;
+    }
+
+    public Batch(String name, String description, Employee instructor) {
+        this.name = name;
+        this.description = description;
+        this.instructor = instructor;
     }
 
     public Long getId() {

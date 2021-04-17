@@ -1,4 +1,8 @@
-package com.revaturemax.model;
+package com.revaturemax.models;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -6,6 +10,10 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
+@Table(name="quiz")
+@Component
+@JsonIgnoreProperties("hibernateLazyInitializer")
+@Scope("prototype")
 public class Quiz {
 
     @Id
