@@ -1,11 +1,16 @@
 package com.revaturemax.model;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.io.Serializable;
 import java.util.Objects;
 
 @Embeddable
+@Component
+@Scope("prototype")
 public class EmployeeTopicId implements Serializable {
 
     @Column(name = "employee_id")

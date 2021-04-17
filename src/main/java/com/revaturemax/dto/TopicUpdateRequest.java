@@ -1,6 +1,10 @@
 package com.revaturemax.dto;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * This DTO class will handle all incoming topic - related update requests
@@ -8,6 +12,8 @@ import java.util.Date;
  * Used predominately by the instructor
  */
 
+@Component
+@Scope("prototype")
 public class TopicUpdateRequest {
     private String topicName;
     private String topicTagName;
@@ -54,5 +60,28 @@ public class TopicUpdateRequest {
     }
 
     public TopicUpdateRequest() {
+    }
+
+    @Override
+    public String toString() {
+        return "TopicUpdateRequest{" +
+                "topicName='" + topicName + '\'' +
+                ", topicTagName='" + topicTagName + '\'' +
+                ", batchId=" + batchId +
+                ", date=" + date +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TopicUpdateRequest that = (TopicUpdateRequest) o;
+        return batchId == that.batchId && Objects.equals(topicName, that.topicName) && Objects.equals(topicTagName, that.topicTagName) && Objects.equals(date, that.date);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(topicName, topicTagName, batchId, date);
     }
 }

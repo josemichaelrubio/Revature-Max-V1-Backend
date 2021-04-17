@@ -1,10 +1,17 @@
 package com.revaturemax.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
 @Table(name = "employee_quiz")
+@Component
+@Scope("prototype")
+@JsonIgnoreProperties("hibernateLazyInitializer")
 public class EmployeeQuiz {
 
     @EmbeddedId
@@ -30,6 +37,7 @@ public class EmployeeQuiz {
         this.quiz = quiz;
         this.score = score;
     }
+
 
     public EmployeeQuizId getId() {
         return id;

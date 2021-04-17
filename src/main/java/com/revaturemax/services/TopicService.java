@@ -49,24 +49,25 @@ public class TopicService{
     // Topic CRUD methods in the service layer
 
 
-    public Topic create(TopicRequest topic){
-        Topic newTopic = new Topic(topic.getTag(), topic.getTopicName());
-        return topicRepository.save(newTopic);
+    public List<Topic> getAll(){
+        return topicRepository.findAll();
+    }
+
+    public Topic create(Topic topic){
+        return topicRepository.save(topic);
     }
 
 
-    public Topic update(TopicUpdateRequest topic){
-        TopicTag topicTag = topicTagRepository.findByName(topic.getTopicTagName());
-        if(topicTag!=null){
-            Topic newTopic = new Topic(topicTag, topic.getTopicName());
-            Batch batch = batchRepository.getOne(topic.getBatchId());
-            CurriculumDay curriculumDay = curriculumDayRepo.findByBatchAndDate(batch, topic.getDate());
-            curriculumDay.addTopic(newTopic);
-            curriculumDayRepo.save(curriculumDay);
-            return topicRepository.save(newTopic);
-        } else {
-            TopicTag newTopicTag = topicTagRepository.save(new TopicTag(topic.getTopicTagName()));
-            return topicRepository.save(new Topic(newTopicTag, topic.getTopicName()));
-        }}
+    public Topic update(long id, TopicRequest topic){
+        Topic updateTopic = topicRepository.getOne(id);
+        updateTopic.setTag(topic.getTag());
+        updateTopic.setName(topic.getTopicName());
+        topicRepository.save(updateTopic);
+        return updateTopic;
+    }
+
+    public void delete(long id){
+        topicRepository.deleteById(id);
+    }
 
 }

@@ -45,13 +45,17 @@ public class TopicController {
 
 
     /*
-     * Post mapping for /topics
-     * Designed for creating individual topics
-     * @param Topic DTO containing tag and assigned date.
+     * mapping for /topics
+     * Designed for CRUD individual topics
      */
 
+    @GetMapping
+    public ResponseEntity<List<Topic>> getAllTopics(){
+        return ResponseEntity.ok().body(topicService.getAll());
+    }
+
     @PostMapping
-    public ResponseEntity<Topic> postNewTopic(@RequestBody TopicRequest topic){
+    public ResponseEntity<Topic> postNewTopic(@RequestBody Topic topic){
         //authenticate instructor
         logger.info("Instructor creating new topic");
         Topic newTopic = topicService.create(topic);
@@ -59,16 +63,23 @@ public class TopicController {
     }
 
     /*
-     * Put mapping for /topics
+     * Put mapping for /topics/:id
      * Designed for updating individual topics
      * @param Topic DTO containing tag and assigned date.
      */
 
     @PutMapping
-    public ResponseEntity<Topic> updateTopic(@RequestBody TopicUpdateRequest topic){
+    public ResponseEntity<Topic> updateTopic(@PathVariable long id, @RequestBody TopicRequest topic){
         //authenticate instructor
         logger.info("Instructor creating new topic");
-        return ResponseEntity.ok().body(topicService.update(topic));
+        return ResponseEntity.ok().body(topicService.update(id, topic));
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void deleteTopic(@PathVariable long id){
+        logger.info("Deleting topic from DB");
+        topicService.delete(id);
     }
 
 }
