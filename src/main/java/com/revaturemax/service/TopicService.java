@@ -28,7 +28,7 @@ public class TopicService {
             return null; //TODO: throw 404
         }
 
-        /* Prepare response with the topic and employee's competency rating */
+        //TODO: refactor...
         Float competency = null;
         Notes starredNotes = null;
         EmployeeTopic et = employeeTopicRepository.getEmployeeTopicById(new EmployeeTopicId(employeeId, topicId));
@@ -37,8 +37,6 @@ public class TopicService {
             starredNotes = et.getFavNotes();
         }
         TopicResponse topicResponse = new TopicResponse(topic, competency);
-
-        /* Prepare response with notes list */
         Map<Notes, Integer> timesStarred = new HashMap<>();
         for (Employee associate : batchRepository.getBatchById(batchId).getAssociates()) {
             Notes notes = notesRepository.getNotesByEmployeeIdAndTopicId(associate.getId(), topicId);

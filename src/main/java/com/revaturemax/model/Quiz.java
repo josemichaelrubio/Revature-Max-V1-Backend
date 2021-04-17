@@ -1,5 +1,7 @@
 package com.revaturemax.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +16,7 @@ public class Quiz {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "curriculum_day_id")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private CurriculumDay day;
 
     private String name;
@@ -23,6 +26,7 @@ public class Quiz {
             joinColumns = @JoinColumn(name = "quiz_id"),
             inverseJoinColumns = @JoinColumn(name = "topic_id")
     )
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<Topic> topics = new ArrayList<>();
 
     public Quiz() {}

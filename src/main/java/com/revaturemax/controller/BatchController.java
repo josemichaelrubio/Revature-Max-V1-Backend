@@ -2,6 +2,7 @@ package com.revaturemax.controller;
 
 import com.revaturemax.dto.TopicResponse;
 import com.revaturemax.model.CurriculumDay;
+import com.revaturemax.model.EmployeeQuiz;
 import com.revaturemax.model.Quiz;
 import com.revaturemax.service.BatchService;
 import com.revaturemax.service.QuizService;
@@ -29,12 +30,14 @@ public class BatchController {
     @Autowired
     private TopicService topicService;
 
+
+
     @GetMapping(value = "/{batch-id}/curriculum", produces = "application/json")
-    public List<CurriculumDay> getCurriculum(@PathVariable("batch-id") long batchId) {
+    public List<EmployeeQuiz> getCurriculum(@PathVariable("batch-id") long batchId) {
         //TODO - authenticate token
         logger.info("GET /batches/{}/curriculum received", batchId);
-        //TODO - implement
-        return null;
+        //return batchService.getCurriculum(batchId);
+        return quizService.getEmployeeQuizzes(batchId);
     }
 
     @PostMapping(value = "/{batch-id}/quizzes")
@@ -50,8 +53,8 @@ public class BatchController {
                         @PathVariable("quiz-id") long quizId,
                         @RequestBody Quiz quiz) {
         //TODO - authenticate token
-        //quiz-id = quiz.getId check?
         logger.info("PUT /batches/{}/quizzes/{} received", batchId, quizId);
+        quiz.setId(quizId);
         quizService.updateQuiz(batchId, quiz);
     }
 
