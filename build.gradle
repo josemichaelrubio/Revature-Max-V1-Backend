@@ -38,13 +38,9 @@ task fatJar(type: Jar) {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.slf4j:slf4j-simple:1.7.30'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.10.3'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'com.microsoft.sqlserver:mssql-jdbc:9.2.1.jre8'
-    implementation 'org.hibernate:hibernate-core:5.4.30.Final'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
-    testImplementation 'com.konghq:unirest-java:3.11.11'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
 test {
