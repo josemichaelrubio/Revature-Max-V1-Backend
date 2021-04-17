@@ -50,6 +50,12 @@ public class BatchService {
 
         //Get mapping of average quiz score to quiz name for batch
         Map<String, Float> averageQuizScores = getQuizAveragesInfo(id);
+        logger.info("check");
+        for (String key : averageQuizScores.keySet()) {
+            logger.info("key: " + key);
+            logger.info("value: " + averageQuizScores.get(key));
+        }
+
 
         // Get mapping of average competancies by topic for batch
         Map<String, Float> averageCompetenciesByTopic = getTopicCompetencyAveragesInfo(id);
@@ -74,7 +80,7 @@ public class BatchService {
 
     public Map<String, Float> getQuizAveragesInfo(Long id) {
 
-        Map<String, Float> quizAverages = new TreeMap<String, Float>(new SortAscendingComparatorId());
+        Map<String, Float> quizAverages = new TreeMap<>(new SortAscendingComparatorId());
 
        List<EmployeeQuiz> employeeQuizzes = employeeQuizRepository.findEmployeeQuizzesByBatchIdAndSort(id);
        List<Float> scoresForQuiz = new ArrayList<>();
@@ -107,8 +113,14 @@ public class BatchService {
                scoresForQuiz.add(employeeQuizzes.get(i).getScore());
            }
        }
+
+        for (String key: quizAverages.keySet()) {
+            logger.info("key: " + key);
+            logger.info("value: " + quizAverages.get(key));
+        }
         
         return quizAverages;
+
     }
 
     public Map<String, Float> getTopicCompetencyAveragesInfo(Long id) {
