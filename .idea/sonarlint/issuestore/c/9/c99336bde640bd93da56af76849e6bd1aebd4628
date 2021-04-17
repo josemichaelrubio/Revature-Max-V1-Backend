@@ -1,3 +1,7 @@
 
 ]
 java:S4684#"@Replace this persistent entity with a simple POJO or DTO object.(¤“òˆ8¾òÎ¼/
+]
+java:S4684:"@Replace this persistent entity with a simple POJO or DTO object.(¬ÁÀ³8Îèà/
+e
+java:S1128"CRemove this unused import 'com.revaturemax.dto.TopicUpdateRequest'.(µíñòıÿÿÿÿ8ìÆíß/
