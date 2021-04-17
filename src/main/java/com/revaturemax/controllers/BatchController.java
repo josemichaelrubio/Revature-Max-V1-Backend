@@ -2,6 +2,7 @@ package com.revaturemax.controllers;
 
 import com.revaturemax.dto.BatchResponse;
 import com.revaturemax.dto.TopicResponse;
+import com.revaturemax.models.Employee;
 import com.revaturemax.models.EmployeeQuiz;
 import com.revaturemax.models.Quiz;
 import com.revaturemax.services.BatchService;
@@ -10,6 +11,8 @@ import com.revaturemax.services.TopicService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,7 +22,7 @@ import java.util.List;
 @CrossOrigin
 public class BatchController {
 
-    private static Logger logger = LogManager.getLogger(BatchController.class);
+    private static final Logger logger = LogManager.getLogger(BatchController.class);
 
     @Autowired
     private BatchService batchService;
@@ -76,5 +79,39 @@ public class BatchController {
         logger.info("GET /batches/{}/topics/{} received", batchId, topicId);
         return topicService.getTopic(batchId, topicId);
     }
+
+
+    /**
+     * Below is all CRUD controller methods for
+     * path: /batch/:batchId/associates
+     * @Param the long id for the batch
+     * designed for trainer functionality to manipulate the associates assigned to a batch.
+     *
+     * --Andrew Shields
+     */
+    @GetMapping("/{batch-id}/associates")
+    public ResponseEntity<List<Employee>> getAssociates(@PathVariable("batch-id") long batchId){
+        logger.info("Accessing all associates listed under batch id: "+batchId);
+        return ResponseEntity.ok().body(batchService.getAllAssociates(batchId));
+    }
+
+    @PostMapping("/{batch-id}/associates")
+    public ResponseEntity<List<Employee>> postAssociates(@PathVariable("batch-id") long batchId,
+                                                         @RequestBody List<Employee> employees){
+        //TODO - authenticate trainer role
+        logger.info("trainer adding employees: "+employees+" to batch: "+batchId);
+        return ResponseEntity.ok().body(batchService.addAssociate(batchId, employees));
+    }
+
+    @DeleteMapping("/{batch-id}/associates/{employee-id}")
+    public ResponseEntity<HttpStatus> deleteAssociate(@PathVariable("batch-id") long batchId,
+                                                      @PathVariable("employee-id") long employeeId){
+        //TODO - authenticate trainer role
+        logger.info("Trainer is removing employee, "+employeeId+", from batch: "+batchId);
+        batchService.deleteAssociate(batchId, employeeId);
+
+        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+    }
+
 
 }
