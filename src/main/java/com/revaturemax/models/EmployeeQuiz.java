@@ -4,6 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -37,6 +41,7 @@ public class EmployeeQuiz {
         this.quiz = quiz;
         this.score = score;
     }
+
 
     public EmployeeQuizId getId() {
         return id;

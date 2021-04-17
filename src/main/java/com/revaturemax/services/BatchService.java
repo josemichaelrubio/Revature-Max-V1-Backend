@@ -1,19 +1,17 @@
 package com.revaturemax.services;
 
+
+import com.revaturemax.models.Employee;
+import com.revaturemax.repositories.BatchRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import com.revaturemax.dto.BatchResponse;
 import com.revaturemax.models.EmployeeQuiz;
 import com.revaturemax.projections.BatchSummary;
-import com.revaturemax.projections.QuizNameOnly;
-import com.revaturemax.repositories.BatchRepository;
 import com.revaturemax.repositories.EmployeeQuizRepository;
 import com.revaturemax.repositories.QuizRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
 import java.util.*;
 
 @Service
@@ -29,7 +27,10 @@ public class BatchService {
 
     @Autowired
     private EmployeeQuizRepository employeeQuizRepository;
+    public long getByAssociate(Employee emp){
+        return batchRepository.findBatchIdByEmployeeId(emp.getId());
 
+    }
     public BatchResponse getBatchInfoAndAveragesById(long id) {
         // Get name, description and instructor of batch -- will later be passed to BatchResponse object
         BatchSummary batchSummary = getBasicBatchInfo(id);
@@ -107,6 +108,8 @@ public class BatchService {
         public int compare(String o1, String o2) {
             return o1.compareTo(o2);
         }
+
     }
+
 
 }

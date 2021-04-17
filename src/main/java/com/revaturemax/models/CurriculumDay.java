@@ -1,5 +1,8 @@
 package com.revaturemax.models;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import javax.persistence.*;
 import java.sql.Date;
 import java.util.ArrayList;
@@ -8,6 +11,8 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "curriculum_day")
+@Component
+@Scope("prototype")
 public class CurriculumDay {
 
     @Id

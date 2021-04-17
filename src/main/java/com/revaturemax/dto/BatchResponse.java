@@ -1,10 +1,9 @@
 package com.revaturemax.dto;
 
-import com.revaturemax.models.Batch;
+
 import com.revaturemax.projections.BatchSummary;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;

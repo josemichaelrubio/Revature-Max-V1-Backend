@@ -1,9 +1,14 @@
 package com.revaturemax.models;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
+@Component
+@Scope("prototype")
 public class Topic {
 
     @Id
@@ -17,6 +22,10 @@ public class Topic {
     private String name;
 
     public Topic() {}
+
+    public Topic(String name){
+        this.name=name;
+    }
 
     public Topic(TopicTag tag, String name) {
         this.tag = tag;
