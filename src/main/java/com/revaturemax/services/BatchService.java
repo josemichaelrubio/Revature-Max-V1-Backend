@@ -93,8 +93,7 @@ public class BatchService {
                scoresForQuiz.add(employeeQuizzes.get(i).getScore());
            }
        }
-        logger.info("value: " + quizAverages.get("Quiz 1"));
-        logger.info("value: " + quizAverages.get("quiz1"));
+        
         return quizAverages;
     }
 
