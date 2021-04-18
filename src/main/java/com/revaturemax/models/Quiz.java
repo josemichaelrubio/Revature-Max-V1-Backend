@@ -42,6 +42,10 @@ public class Quiz {
 
     public Quiz() {}
 
+    public Quiz(Long id) {
+        this.id = id;
+    }
+
     public Quiz(CurriculumDay day, String name) {
         this.day = day;
         this.name = name;

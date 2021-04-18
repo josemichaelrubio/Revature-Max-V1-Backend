@@ -1,9 +1,6 @@
 package com.revaturemax.services;
 
-import com.revaturemax.models.Batch;
-import com.revaturemax.models.CurriculumDay;
-import com.revaturemax.models.EmployeeQuiz;
-import com.revaturemax.models.Quiz;
+import com.revaturemax.models.*;
 import com.revaturemax.repositories.BatchRepository;
 import com.revaturemax.repositories.CurriculumDayRepository;
 import com.revaturemax.repositories.EmployeeQuizRepository;
@@ -12,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -24,19 +20,8 @@ public class QuizService {
     private BatchRepository batchRepository;
     @Autowired
     private CurriculumDayRepository curriculumDayRepository;
-
-
     @Autowired
     private EmployeeQuizRepository employeeQuizRepository;
-    public List<Quiz> getBatchQuizes(long batchId) {
-        return quizRepository.findQuizzesByBatchId(batchId);
-    }
-    public List<EmployeeQuiz> getEmployeeQuizzes(long batchId) {
-        return employeeQuizRepository.findEmployeeQuizzesByBatchId(batchId);
-    }
-
-
-
 
     public void setNewQuiz(long batchId, Quiz quiz) {
         //Batch batch = authorizeBatchInstructorAccess(batchId, employeeId);
@@ -62,6 +47,16 @@ public class QuizService {
         //Batch batch = authorizeBatchInstructorAccess(batchId, employeeId);
         //validateQuizBelongingToBatch(Batch batch, long quizId);
         quizRepository.deleteById(quizId);
+    }
+
+    public void setEmployeeQuiz(long employeeId, long quizId, EmployeeQuiz employeeQuiz) {
+        //assert JWT.id = employeeId
+        if (!quizRepository.existsById(quizId)) {
+            //404
+        }
+        employeeQuiz.setEmployee(new Employee(employeeId));
+        employeeQuiz.setQuiz(new Quiz(quizId));
+        employeeQuizRepository.save(employeeQuiz);
     }
 
     private Batch authorizeBatchInstructorAccess(long batchId, long employeeId) throws Exception {

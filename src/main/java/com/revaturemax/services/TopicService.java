@@ -38,6 +38,16 @@ public class TopicService {
     @Autowired
     NotesRepository notesRepository;
 
+    public void setEmployeeTopic(long employeeId, long topicId, EmployeeTopic employeeTopic) {
+        //assert JWT.id = employeeId
+        if (!topicRepository.existsById(topicId)) {
+            //404
+        }
+        employeeTopic.setEmployee(new Employee(employeeId));
+        employeeTopic.setTopic(new Topic(topicId));
+        employeeTopicRepository.save(employeeTopic);
+    }
+
     public TopicResponse getTopic(long batchId, long topicId) {
         long employeeId = 1; //TODO: pull id from JWT or passed as param
         Topic topic = topicRepository.getTopicById(topicId);

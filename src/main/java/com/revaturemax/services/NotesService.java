@@ -11,16 +11,17 @@ public class NotesService {
     @Autowired
     private NotesRepository notesRepository;
 
-    public void setNotes(long batchId, Notes notes) {
+    public Notes setNotes(long employeeId, Notes notes) {
         validateNotes(notes);
         //long employeeId = pulled/passed from JWT
         //notes.setEmployee(new Employee(employeeId));
         if (notes.getNotes().equals("")) {
             notesRepository.delete(notes);
+            return null;
         } else {
             notesRepository.save(notes);
+            return notes;
         }
-
     }
 
     private void validateNotes(Notes notes) {
