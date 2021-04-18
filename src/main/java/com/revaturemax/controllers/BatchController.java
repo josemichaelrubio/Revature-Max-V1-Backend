@@ -5,9 +5,11 @@ import com.revaturemax.dto.TopicResponse;
 import com.revaturemax.models.Employee;
 import com.revaturemax.models.EmployeeQuiz;
 import com.revaturemax.models.Quiz;
+import com.revaturemax.models.Role;
 import com.revaturemax.services.BatchService;
 import com.revaturemax.services.QuizService;
 import com.revaturemax.services.TopicService;
+import com.revaturemax.util.JwtUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -23,6 +26,9 @@ import java.util.List;
 public class BatchController {
 
     private static final Logger logger = LogManager.getLogger(BatchController.class);
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @Autowired
     private BatchService batchService;
@@ -97,20 +103,26 @@ public class BatchController {
 
     @PostMapping("/{batch-id}/associates")
     public ResponseEntity<List<Employee>> postAssociates(@PathVariable("batch-id") long batchId,
+                                                         @RequestHeader("Authorization")String token,
                                                          @RequestBody List<Employee> employees){
-        //TODO - authenticate trainer role
-        logger.info("trainer adding employees: "+employees+" to batch: "+batchId);
-        return ResponseEntity.ok().body(batchService.addAssociate(batchId, employees));
+        if(jwtUtil.getRoleFromToken(token)== Role.INSTRUCTOR){
+            logger.info("trainer adding employees: "+employees+" to batch: "+batchId);
+            return ResponseEntity.ok().body(batchService.addAssociate(batchId, employees));
+        }
+        return new ResponseEntity<>(new ArrayList<>(), HttpStatus.UNAUTHORIZED);
     }
 
     @DeleteMapping("/{batch-id}/associates/{employee-id}")
     public ResponseEntity<HttpStatus> deleteAssociate(@PathVariable("batch-id") long batchId,
+                                                      @RequestHeader("Authorization")String token,
                                                       @PathVariable("employee-id") long employeeId){
-        //TODO - authenticate trainer role
-        logger.info("Trainer is removing employee, "+employeeId+", from batch: "+batchId);
-        batchService.deleteAssociate(batchId, employeeId);
+        if(jwtUtil.getRoleFromToken(token)== Role.INSTRUCTOR){
+            logger.info("Trainer is removing employee, "+employeeId+", from batch: "+batchId);
+            batchService.deleteAssociate(batchId, employeeId);
+            return new ResponseEntity<>(HttpStatus.ACCEPTED);
+        }
 
-        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
 

@@ -1,9 +1,11 @@
 package com.revaturemax.controllers;
 
 import com.revaturemax.dto.TopicRequest;
+import com.revaturemax.models.Role;
 import com.revaturemax.models.Topic;
 import com.revaturemax.models.TopicTag;
 import com.revaturemax.services.TopicService;
+import com.revaturemax.util.JwtUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,9 @@ public class TopicController {
 
     @Autowired
     private TopicService topicService;
+
+    @Autowired
+    JwtUtil jwtUtil;
 
 
     // all '/tags' methods are implemented for testing features
@@ -54,11 +59,15 @@ public class TopicController {
     }
 
     @PostMapping
-    public ResponseEntity<Topic> postNewTopic(@RequestBody Topic topic){
-        //authenticate instructor
-        logger.info("Instructor creating new topic");
-        Topic newTopic = topicService.create(topic);
-        return new ResponseEntity<>(newTopic, HttpStatus.CREATED);
+    public ResponseEntity<Topic> postNewTopic(@RequestBody Topic topic, @RequestHeader("Authorization")String token){
+        if(jwtUtil.getRoleFromToken(token).equals(Role.INSTRUCTOR)){
+            logger.info("Instructor creating new topic");
+            Topic newTopic = topicService.create(topic);
+            return new ResponseEntity<>(newTopic, HttpStatus.CREATED);
+        }
+
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+
     }
 
     /*
@@ -68,17 +77,22 @@ public class TopicController {
      */
 
     @PutMapping
-    public ResponseEntity<Topic> updateTopic(@PathVariable long id, @RequestBody TopicRequest topic){
-        //authenticate instructor
-        logger.info("Instructor creating new topic");
-        return ResponseEntity.ok().body(topicService.update(id, topic));
+    public ResponseEntity<Topic> updateTopic(@PathVariable long id, @RequestBody TopicRequest topic, @RequestHeader("Authorization")String token){
+        if(jwtUtil.getRoleFromToken(token).equals(Role.INSTRUCTOR)){
+            logger.info("Instructor creating new topic");
+            return ResponseEntity.ok().body(topicService.update(id, topic));
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void deleteTopic(@PathVariable long id){
-        logger.info("Deleting topic from DB");
-        topicService.delete(id);
+    public void deleteTopic(@PathVariable long id, @RequestHeader("Authorization")String token){
+        if(jwtUtil.getRoleFromToken(token).equals(Role.INSTRUCTOR)){
+            logger.info("Deleting topic from DB");
+            topicService.delete(id);
+        }
+
     }
 
 }

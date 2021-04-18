@@ -22,22 +22,22 @@ import javax.servlet.http.HttpServletRequest;
 public class AuthAspect {
     private Logger logger = LogManager.getLogger(AuthAspect.class);
 
-    @Around("within(com.revaturemax.controller.*)")
-    public ResponseEntity authorizeRequest(ProceedingJoinPoint jp) throws Throwable {
-        HttpServletRequest request =
-                ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-        String token = request.getHeader("Authorization");
-        if (token != null) {
-            /*
-            TODO:
-                -Need JWT
-                -Check if the token is actually valid along with !=null; user is in the database and decrypt the JWT.
-             */
-            logger.info("auth token present");
-            return (ResponseEntity) jp.proceed();
-        } else {
-            logger.warn("auth header not present");
-            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
-        }
-    }
+//    @Around("within(com.revaturemax.controllers.*) && !within(com.revaturemax.controllers.AuthController)")
+//    public ResponseEntity authorizeRequest(ProceedingJoinPoint jp) throws Throwable {
+//        HttpServletRequest request =
+//                ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+//        String token = request.getHeader("Authorization");
+//        if (token != null) {
+//            /*
+//            TODO:
+//                -Need JWT
+//                -Check if the token is actually valid along with !=null; user is in the database and decrypt the JWT.
+//             */
+//            logger.info("auth token present");
+//            return (ResponseEntity) jp.proceed();
+//        } else {
+//            logger.warn("auth header not present");
+//            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+//        }
+//    }
 }
