@@ -1,10 +1,12 @@
 package com.revaturemax.controllers;
 
 import com.revaturemax.dto.BatchResponse;
+import com.revaturemax.dto.CurriculumRequest;
 import com.revaturemax.dto.TopicResponse;
-import com.revaturemax.models.EmployeeQuiz;
+import com.revaturemax.models.CurriculumDay;
 import com.revaturemax.models.Quiz;
 import com.revaturemax.services.BatchService;
+import com.revaturemax.services.CurriculumService;
 import com.revaturemax.services.QuizService;
 import com.revaturemax.services.TopicService;
 import org.apache.logging.log4j.LogManager;
@@ -25,6 +27,9 @@ public class BatchController {
     private BatchService batchService;
 
     @Autowired
+    private CurriculumService curriculumService;
+
+    @Autowired
     private QuizService quizService;
 
     @Autowired
@@ -36,11 +41,18 @@ public class BatchController {
     }
 
     @GetMapping(value = "/{batch-id}/curriculum", produces = "application/json")
-    public List<EmployeeQuiz> getCurriculum(@PathVariable("batch-id") long batchId) {
+    public List<CurriculumDay> getCurriculum(@PathVariable("batch-id") long batchId) {
         //TODO - authenticate token
         logger.info("GET /batches/{}/curriculum received", batchId);
-        //return batchService.getCurriculum(batchId);
-        return quizService.getEmployeeQuizzes(batchId);
+        return batchService.getCurriculum(batchId);
+    }
+
+    @PutMapping(value = "/{batch-id}/curriculum", consumes = "application/json")
+    public void setCurriculum(@PathVariable("batch-id") long batchId,
+                              @RequestBody CurriculumRequest curriculumRequest) {
+        //TODO - authenticate token
+        logger.info("PUT /batches/{}/curriculum received", batchId);
+        curriculumService.setCurriculumDay(batchId, curriculumRequest);
     }
 
     @PostMapping(value = "/{batch-id}/quizzes")
