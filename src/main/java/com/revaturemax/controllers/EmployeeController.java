@@ -45,11 +45,12 @@ public class EmployeeController {
 
     private static Logger logger = LogManager.getLogger(EmployeeController.class);
 
-    @PostMapping(consumes = "application/json")
-    public ResponseEntity<Employee> createNewEmployee(@RequestBody Employee employee){
-        logger.info("Adding a new employee: {}", employee);
-        empService.add(employee);
-        return new ResponseEntity<>(employee, HttpStatus.CREATED);
+    @PostMapping(consumes = "application/application/x-www-form-urlencoded")
+    public ResponseEntity<Employee> createNewEmployee(@RequestParam("name") String name,
+                                                      @RequestParam("email") String email,
+                                                      @RequestParam("password") String password) {
+        logger.info("POST /employees received");
+        return ResponseEntity.ok().body(empService.createNewEmployee(name, email, password));
     }
 
     @GetMapping("/{id}")

@@ -2,14 +2,15 @@ package com.revaturemax.services;
 
 import com.revaturemax.dto.EmployeeQuizResponse;
 import com.revaturemax.dto.EmployeeTopicResponse;
-import com.revaturemax.models.Employee;
-import com.revaturemax.models.EmployeeQuiz;
-import com.revaturemax.models.EmployeeTopic;
+import com.revaturemax.models.*;
 import com.revaturemax.repositories.EmployeeQuizRepository;
 import com.revaturemax.repositories.EmployeeRepository;
 import com.revaturemax.repositories.EmployeeTopicRepository;
+import com.revaturemax.repositories.PasswordRepository;
+import com.revaturemax.util.Passwords;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,9 @@ public class EmployeeService {
     EmployeeRepository empRepo;
 
     @Autowired
+    PasswordRepository passwordRepository;
+
+    @Autowired
     EmployeeQuizRepository empQuizRepo;
 
     @Autowired
@@ -30,8 +34,15 @@ public class EmployeeService {
         return empRepo.getOne(id);
     }
 
-    public Employee add(Employee employee) {
-        return empRepo.save(employee);
+    @Transactional
+    public Employee createNewEmployee(String name, String email, String password) {
+        //validate params
+        Employee employee = new Employee(Role.ASSOCIATE, name, email);
+        byte[] salt = Passwords.getNewPasswordSalt();
+        byte[] hash = Passwords.getPasswordHash(password, salt);
+        employee = empRepo.save(employee);
+        passwordRepository.save(new Password(employee, salt, hash));
+        return employee;
     }
 
     public void deleteEmployee(long id) {

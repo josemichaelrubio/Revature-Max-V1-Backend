@@ -10,7 +10,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-public interface CurriculumDayRepository  extends JpaRepository<CurriculumDay, Long> {
+public interface CurriculumDayRepository extends JpaRepository<CurriculumDay, Long> {
 
     CurriculumDay findByBatchAndDate(Batch batch, Date date);
 
