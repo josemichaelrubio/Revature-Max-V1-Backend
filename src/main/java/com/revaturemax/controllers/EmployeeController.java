@@ -45,7 +45,7 @@ public class EmployeeController {
 
     private static Logger logger = LogManager.getLogger(EmployeeController.class);
 
-    @PostMapping(consumes = "application/application/x-www-form-urlencoded")
+    @PostMapping(consumes = "application/x-www-form-urlencoded")
     public ResponseEntity<Employee> createNewEmployee(@RequestParam("name") String name,
                                                       @RequestParam("email") String email,
                                                       @RequestParam("password") String password) {
