@@ -51,10 +51,6 @@ public class BatchService {
 
         //Get mapping of average quiz score to quiz name for batch
         Map<String, List<String>> averageQuizScores = getQuizAveragesInfo(id);
-        for (String key : averageQuizScores.keySet()) {
-            logger.info("key: " + key);
-            logger.info("value: " + averageQuizScores.get(key));
-        }
 
         // Get mapping of average competancies by topic for batch
         Map<String, List<String>> averageCompetenciesByTopic = getTopicCompetencyAveragesInfo(id);
