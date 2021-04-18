@@ -26,13 +26,11 @@ public class BatchResponse implements Serializable {
         this.batch = batch;
     }
 
-    public void addQuizAverage(String quizName, float average) {
-        logger.info("quizName: " + quizName);
-        logger.info("average: " + average);
+    public void addQuizAverage(String quizName, String average) {
         this.quizAverage.add(new QuizAverage(quizName, average));
     }
 
-    public void addCompetencyAverage(String topicName, float average) {
+    public void addCompetencyAverage(String topicName, String average) {
         this.competencyAverage.add(new CompetencyAverage(topicName, average));
     }
 
@@ -85,11 +83,11 @@ public class BatchResponse implements Serializable {
     @Component
     private static class QuizAverage implements Serializable {
         private String quizName;
-        private float average;
+        private String average;
 
         public QuizAverage() {}
 
-        public QuizAverage(String topicName, float average) {
+        public QuizAverage(String topicName, String average) {
             this.quizName = topicName;
             this.average = average;
         }
@@ -102,11 +100,11 @@ public class BatchResponse implements Serializable {
             this.quizName = quizName;
         }
 
-        public float getAverage() {
+        public String getAverage() {
             return average;
         }
 
-        public void setAverage(float average) {
+        public void setAverage(String average) {
             this.average = average;
         }
 
@@ -115,7 +113,7 @@ public class BatchResponse implements Serializable {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             QuizAverage that = (QuizAverage) o;
-            return Float.compare(that.average, average) == 0 && Objects.equals(quizName, that.quizName);
+            return Objects.equals(quizName, that.quizName) && Objects.equals(average, that.average);
         }
 
         @Override
@@ -136,11 +134,11 @@ public class BatchResponse implements Serializable {
     private static class CompetencyAverage implements Serializable {
 
         private String topicName;
-        private float average;
+        private String average;
 
         public CompetencyAverage() {}
 
-        public CompetencyAverage(String topicName, float average) {
+        public CompetencyAverage(String topicName, String average) {
             this.topicName = topicName;
             this.average = average;
         }
@@ -153,11 +151,11 @@ public class BatchResponse implements Serializable {
             this.topicName = topicName;
         }
 
-        public float getAverage() {
+        public String getAverage() {
             return average;
         }
 
-        public void setAverage(float average) {
+        public void setAverage(String average) {
             this.average = average;
         }
 
@@ -166,7 +164,7 @@ public class BatchResponse implements Serializable {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             CompetencyAverage that = (CompetencyAverage) o;
-            return Float.compare(that.average, average) == 0 && Objects.equals(topicName, that.topicName);
+            return Objects.equals(topicName, that.topicName) && Objects.equals(average, that.average);
         }
 
         @Override
