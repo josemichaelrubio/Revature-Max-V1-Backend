@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 import java.util.Objects;
+import java.util.stream.DoubleStream;
 
 @Entity
 @Table(name = "employee_topic")
