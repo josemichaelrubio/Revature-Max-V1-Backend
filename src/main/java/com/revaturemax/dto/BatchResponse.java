@@ -26,12 +26,12 @@ public class BatchResponse implements Serializable {
         this.batch = batch;
     }
 
-    public void addQuizAverage(String quizName, String average) {
-        this.quizAverage.add(new QuizAverage(quizName, average));
+    public void addQuizAverage(String quizName, String average, String count) {
+        this.quizAverage.add(new QuizAverage(quizName, average, count));
     }
 
-    public void addCompetencyAverage(String topicName, String average) {
-        this.competencyAverage.add(new CompetencyAverage(topicName, average));
+    public void addCompetencyAverage(String topicName, String average, String count) {
+        this.competencyAverage.add(new CompetencyAverage(topicName, average, count));
     }
 
     public BatchSummary getBatch() {
@@ -84,12 +84,14 @@ public class BatchResponse implements Serializable {
     private static class QuizAverage implements Serializable {
         private String quizName;
         private String average;
+        private String count;
 
         public QuizAverage() {}
 
-        public QuizAverage(String topicName, String average) {
+        public QuizAverage(String topicName, String average, String count) {
             this.quizName = topicName;
             this.average = average;
+            this.count = count;
         }
 
         public String getQuizName() {
@@ -108,24 +110,34 @@ public class BatchResponse implements Serializable {
             this.average = average;
         }
 
+        public String getCount() {
+            return count;
+        }
+
+        public void setCount(String count) {
+            this.count = count;
+        }
+
+
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             QuizAverage that = (QuizAverage) o;
-            return Objects.equals(quizName, that.quizName) && Objects.equals(average, that.average);
+            return Objects.equals(quizName, that.quizName) && Objects.equals(average, that.average) && Objects.equals(count, that.count);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(quizName, average);
+            return Objects.hash(quizName, average, count);
         }
 
         @Override
         public String toString() {
             return "QuizAverage{" +
                     "quizName='" + quizName + '\'' +
-                    ", average=" + average +
+                    ", average='" + average + '\'' +
+                    ", count='" + count + '\'' +
                     '}';
         }
     }
@@ -135,12 +147,14 @@ public class BatchResponse implements Serializable {
 
         private String topicName;
         private String average;
+        private String count;
 
         public CompetencyAverage() {}
 
-        public CompetencyAverage(String topicName, String average) {
+        public CompetencyAverage(String topicName, String average, String count) {
             this.topicName = topicName;
             this.average = average;
+            this.count = count;
         }
 
         public String getTopicName() {
@@ -159,24 +173,33 @@ public class BatchResponse implements Serializable {
             this.average = average;
         }
 
+        public String getCount() {
+            return count;
+        }
+
+        public void setCount(String count) {
+            this.count = count;
+        }
+
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             CompetencyAverage that = (CompetencyAverage) o;
-            return Objects.equals(topicName, that.topicName) && Objects.equals(average, that.average);
+            return Objects.equals(topicName, that.topicName) && Objects.equals(average, that.average) && Objects.equals(count, that.count);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(topicName, average);
+            return Objects.hash(topicName, average, count);
         }
 
         @Override
         public String toString() {
             return "CompetencyAverage{" +
                     "topicName='" + topicName + '\'' +
-                    ", average=" + average +
+                    ", average='" + average + '\'' +
+                    ", count='" + count + '\'' +
                     '}';
         }
     }

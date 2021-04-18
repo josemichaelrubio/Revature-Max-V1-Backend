@@ -50,19 +50,25 @@ public class BatchService {
         BatchSummary batchSummary = getBasicBatchInfo(id);
 
         //Get mapping of average quiz score to quiz name for batch
-        Map<String, String> averageQuizScores = getQuizAveragesInfo(id);
+        Map<String, List<String>> averageQuizScores = getQuizAveragesInfo(id);
+        for (String key : averageQuizScores.keySet()) {
+            logger.info("key: " + key);
+            logger.info("value: " + averageQuizScores.get(key));
+        }
 
         // Get mapping of average competancies by topic for batch
-        Map<String, String> averageCompetenciesByTopic = getTopicCompetencyAveragesInfo(id);
+        Map<String, List<String>> averageCompetenciesByTopic = getTopicCompetencyAveragesInfo(id);
 
         BatchResponse batchResponse = new BatchResponse(batchSummary);
 
-        for (String key : averageQuizScores.keySet()) {
-            batchResponse.addQuizAverage(key, averageQuizScores.get(key));
+       for (String key : averageQuizScores.keySet()) {
+            List<String> values = averageQuizScores.get(key);
+            batchResponse.addQuizAverage(key, values.get(0), values.get(1));
         }
 
         for (String key : averageCompetenciesByTopic.keySet()) {
-            batchResponse.addCompetencyAverage(key, averageCompetenciesByTopic.get(key));
+            List <String> values = averageCompetenciesByTopic.get(key);
+            batchResponse.addCompetencyAverage(key, values.get(0), values.get(1));
         }
 
         return batchResponse;
@@ -73,13 +79,14 @@ public class BatchService {
         return batchRepository.getById(id);
     }
 
-    public Map<String, String> getQuizAveragesInfo(Long id) {
+    public Map<String, List<String>> getQuizAveragesInfo(Long id) {
 
-        Map<String, String> quizAverages = new TreeMap<>(new SortAscendingComparatorId());
+        Map<String, List<String>> quizAverages = new TreeMap<>(new SortAscendingComparatorId());
 
        List<EmployeeQuiz> employeeQuizzes = employeeQuizRepository.findEmployeeQuizzesByBatchIdAndSort(id);
        List<Float> scoresForQuiz = new ArrayList<>();
        long placeholder = 1;
+       long count = 0;
        for (int i=0; i < employeeQuizzes.size() + 1; i++) {
            if (i == employeeQuizzes.size()) {
                float scoreSum = 0;
@@ -89,11 +96,16 @@ public class BatchService {
                float averageForQuiz = scoreSum/(scoresForQuiz.size());
                String formatAverage = String.format("%.1f", averageForQuiz);
                String quizName = employeeQuizzes.get(i - 1).getQuiz().getName();
-               quizAverages.put(quizName, formatAverage);
+               String strCount = "" + count;
+               List<String> quizInfo = new ArrayList<>();
+               quizInfo.add(formatAverage);
+               quizInfo.add(strCount);
+               quizAverages.put(quizName, quizInfo);
                scoresForQuiz.clear();
            }
            else if (placeholder == employeeQuizzes.get(i).getQuiz().getId()) {
                scoresForQuiz.add(employeeQuizzes.get(i).getScore());
+               count = count + 1;
            }
            else {
                float scoreSum = 0;
@@ -103,10 +115,16 @@ public class BatchService {
                float averageForQuiz = scoreSum/(scoresForQuiz.size());
                String formatAverage = String.format("%.1f", averageForQuiz);
                String quizName = employeeQuizzes.get(i - 1).getQuiz().getName();
-               quizAverages.put(quizName, formatAverage);
+               String strCount = "" + count;
+               List<String> quizInfo = new ArrayList<>();
+               quizInfo.add(formatAverage);
+               quizInfo.add(strCount);
+               quizAverages.put(quizName, quizInfo);
                scoresForQuiz.clear();
+               count = 0;
                placeholder = employeeQuizzes.get(i).getQuiz().getId();
                scoresForQuiz.add(employeeQuizzes.get(i).getScore());
+               count = count + 1;
            }
        }
         
@@ -114,11 +132,12 @@ public class BatchService {
 
     }
 
-    public Map<String, String> getTopicCompetencyAveragesInfo(Long id) {
-        Map<String, String> topicCompetencyAverages = new TreeMap<>(new SortAscendingComparatorId());
+    public Map<String, List<String>> getTopicCompetencyAveragesInfo(Long id) {
+        Map<String, List<String>> topicCompetencyAverages = new TreeMap<>(new SortAscendingComparatorId());
         List<EmployeeTopic> employeeTopics = employeeTopicRepository.getEmployeeTopicsByBatchIdAndSort(id);
         List<Float> competencyScoresForTopic = new ArrayList<>();
         long placeholder = 1;
+        long count = 0;
         for (int i = 0; i < employeeTopics.size() + 1; i++) {
             if (i == employeeTopics.size()) {
                 float sumCompetencies = 0;
@@ -128,12 +147,17 @@ public class BatchService {
                 float averageForTopic = sumCompetencies/(competencyScoresForTopic.size());
                 String formatAverage = String.format("%.1f", averageForTopic);
                 String topicName = employeeTopics.get(i - 1).getTopic().getTag().getName();
-                topicCompetencyAverages.put(topicName, formatAverage);
+                String strCount = "" + count;
+                List<String> topicInfo = new ArrayList<>();
+                topicInfo.add(formatAverage);
+                topicInfo.add(strCount);
+                topicCompetencyAverages.put(topicName, topicInfo);
                 competencyScoresForTopic.clear();
             }
 
             else if (placeholder == employeeTopics.get(i).getTopic().getTag().getId()) {
                 competencyScoresForTopic.add(employeeTopics.get(i).getCompetency());
+                count = count + 1;
             }
 
             else {
@@ -144,10 +168,16 @@ public class BatchService {
                 float averageForTopic = sumCompetencies/(competencyScoresForTopic.size());
                 String formatAverage = String.format("%.1f", averageForTopic);
                 String topicName = employeeTopics.get(i - 1).getTopic().getTag().getName();
-                topicCompetencyAverages.put(topicName, formatAverage);
+                String strCount = "" + count;
+                List<String> topicInfo = new ArrayList<>();
+                topicInfo.add(formatAverage);
+                topicInfo.add(strCount);
+                topicCompetencyAverages.put(topicName, topicInfo);
                 competencyScoresForTopic.clear();
+                count = 0;
                 placeholder = employeeTopics.get(i).getTopic().getTag().getId();
                 competencyScoresForTopic.add(employeeTopics.get(i).getCompetency());
+                count = count + 1;
 
             }
 
