@@ -24,6 +24,7 @@ import java.lang.annotation.Repeatable;
 import java.util.List;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/employees")
 public class EmployeeController {
 
@@ -102,6 +103,15 @@ public class EmployeeController {
         notesService.deleteNotes(id);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
+
+    @PutMapping("{id}/notes/{id}")
+    public ResponseEntity<Notes> updateNotes(@RequestBody Notes newNotes, @PathVariable Long id){
+        logger.info("Updating notes with id: {}", id);
+        notesService.updateNotes(id);
+        return ResponseEntity.ok().body(notesService.updateNotes(id,newNotes));
+    }
+    //no session LazyInitializationException
+
 
 
 
