@@ -105,7 +105,7 @@ public class BatchService {
            }
            else if (placeholder == employeeQuizzes.get(i).getQuiz().getId()) {
                scoresForQuiz.add(employeeQuizzes.get(i).getScore());
-               count = count + 1;
+               count++;
            }
            else {
                float scoreSum = 0;
@@ -124,7 +124,7 @@ public class BatchService {
                count = 0;
                placeholder = employeeQuizzes.get(i).getQuiz().getId();
                scoresForQuiz.add(employeeQuizzes.get(i).getScore());
-               count = count + 1;
+               count++;
            }
        }
         
@@ -157,7 +157,7 @@ public class BatchService {
 
             else if (placeholder == employeeTopics.get(i).getTopic().getTag().getId()) {
                 competencyScoresForTopic.add(employeeTopics.get(i).getCompetency());
-                count = count + 1;
+                count++;
             }
 
             else {
@@ -177,7 +177,7 @@ public class BatchService {
                 count = 0;
                 placeholder = employeeTopics.get(i).getTopic().getTag().getId();
                 competencyScoresForTopic.add(employeeTopics.get(i).getCompetency());
-                count = count + 1;
+                count++;
 
             }
 
