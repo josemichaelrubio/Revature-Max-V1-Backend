@@ -1,20 +1,17 @@
 package com.revaturemax.controllers;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.revaturemax.dto.EmployeeQuizResponse;
 import com.revaturemax.dto.EmployeeResponse;
 import com.revaturemax.dto.EmployeeTopicResponse;
-import com.revaturemax.dto.NewEmployee;
 import com.revaturemax.models.Employee;
-import com.revaturemax.models.Role;
 import com.revaturemax.services.BatchService;
 import com.revaturemax.services.EmployeeService;
 import com.revaturemax.util.JwtUtil;
-import com.revaturemax.util.Passwords;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,14 +33,15 @@ public class EmployeeController {
 
     private static Logger logger = LogManager.getLogger(EmployeeController.class);
 
-    @PostMapping(consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE})
-    public ResponseEntity<Employee> createNewEmployee(NewEmployee emp){
-        logger.info("Adding a new employee: {}", emp);
-
-        Employee employee = empService.add(emp);
-
-        return new ResponseEntity<>(employee, HttpStatus.CREATED);
+    @PostMapping(consumes = "application/x-www-form-urlencoded")
+    public ResponseEntity<Employee> createNewEmployee(@RequestParam("name") String name,
+                                                      @RequestParam("email") String email,
+                                                      @RequestParam("password") String password,
+                                                      @RequestParam("role") String role) {
+        logger.info("POST /employees received");
+        return ResponseEntity.ok().body(empService.createNewEmployee(name, email, password, role));
     }
+
 
 
 
@@ -74,25 +72,21 @@ public class EmployeeController {
         if(jwtUtil.authorizeEmployee(token, id)){
             EmployeeResponse employeeResponse = new EmployeeResponse();
 
-            Employee emp = empService.getById(id);
+            EmployeeResponse emp = empService.getEmployeeInfo(id, employeeResponse);
 
-            employeeResponse.setName(emp.getName());
-
-            employeeResponse.setRole(emp.getRole());
-
-            long batchId = batchService.getByAssociate(emp);
+            long batchId = batchService.getByAssociate(id);
 
             if(batchId>0){
                 employeeResponse.setBatchId(batchId);
             }
 
-            List<EmployeeQuizResponse> quizzes = empService.getQuizzesById(emp);
+            List<EmployeeQuizResponse> quizzes = empService.getQuizzesById(id);
 
             if(quizzes!=null){
                 employeeResponse.setQuizzes(quizzes);
             }
 
-            List<EmployeeTopicResponse> topics = empService.getTopicsById(emp);
+            List<EmployeeTopicResponse> topics = empService.getTopicsById(id);
             if(topics!=null){
                 employeeResponse.setTopics(topics);
             }

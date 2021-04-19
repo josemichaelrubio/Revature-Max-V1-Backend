@@ -41,8 +41,8 @@ public class BatchService {
         return curriculum;
     }
 
-    public long getByAssociate(Employee emp){
-        return batchRepository.findBatchIdByEmployeeId(emp.getId());
+    public long getByAssociate(long id){
+        return batchRepository.findBatchIdByEmployeeId(id);
     }
 
     public BatchResponse getBatchInfoAndAveragesById(long id) {

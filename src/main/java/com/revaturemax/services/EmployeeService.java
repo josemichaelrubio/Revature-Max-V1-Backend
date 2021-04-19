@@ -1,9 +1,8 @@
 package com.revaturemax.services;
 
-import com.revaturemax.controllers.TopicController;
 import com.revaturemax.dto.EmployeeQuizResponse;
+import com.revaturemax.dto.EmployeeResponse;
 import com.revaturemax.dto.EmployeeTopicResponse;
-import com.revaturemax.dto.NewEmployee;
 import com.revaturemax.models.*;
 import com.revaturemax.repositories.EmployeeQuizRepository;
 import com.revaturemax.repositories.EmployeeRepository;
@@ -14,6 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,30 +40,36 @@ public class EmployeeService {
         return empRepo.getOne(id);
     }
 
-    public Employee add(NewEmployee emp) {
+    @Transactional
+    public EmployeeResponse getEmployeeInfo(long id, EmployeeResponse employeeResponse){
+        Employee emp = empRepo.getOne(id);
 
-        if(emp.getRole().equals("INSTRUCTOR")){
-            Role role = Role.INSTRUCTOR;
-            Employee newTrainer = empRepo.save(new Employee(role, emp.getName(), emp.getEmail()));
-            byte[] newSalt = Passwords.getNewPasswordSalt();
-            byte[] newHash = Passwords.getPasswordHash(emp.getPassword(), newSalt);
-            passwordRepository.save(new Password(newTrainer, newSalt, newHash));
-            return newTrainer;
+        employeeResponse.setName(emp.getName());
+
+        employeeResponse.setRole(emp.getRole());
+
+        return employeeResponse;
+    }
+
+    @Transactional
+    public Employee createNewEmployee(String name, String email, String password, String role) {
+        Role empRole;
+
+        if(role.equals("INSTRUCTOR")){
+            empRole = Role.INSTRUCTOR;
         } else {
-            Role role = Role.ASSOCIATE;
-            logger.info("New employee is an associate");
-            Employee newTrainer = empRepo.save(new Employee(role, emp.getName(), emp.getEmail()));
-            logger.info("Employee: "+newTrainer+" was saved in the DB");
-            logger.info("Getting new password salt");
-            byte[] newSalt = Passwords.getNewPasswordSalt();
-            logger.info("Hashing new password");
-            byte[] newHash = Passwords.getPasswordHash(emp.getPassword(), newSalt);
-            logger.info("Saving new password for employee: "+newTrainer);
-            passwordRepository.save(new Password(newTrainer, newSalt, newHash));
-            return newTrainer;
+            empRole = Role.ASSOCIATE;
         }
 
+        //validate params
+        Employee employee = new Employee(empRole, name, email);
+        byte[] salt = Passwords.getNewPasswordSalt();
+        byte[] hash = Passwords.getPasswordHash(password, salt);
+        employee = empRepo.save(employee);
+        passwordRepository.save(new Password(employee, salt, hash));
+        return employee;
     }
+
 
     public void deleteEmployee(long id) {
         empRepo.deleteById(id);
@@ -71,7 +77,8 @@ public class EmployeeService {
 
 //    public void updateEmployee(Employee employee){return employeeRepository.save(employee);}
 
-    public List<EmployeeQuizResponse> getQuizzesById(Employee emp){
+    public List<EmployeeQuizResponse> getQuizzesById(long id){
+        Employee emp = empRepo.getOne(id);
         List<EmployeeQuiz> quizzes = empQuizRepo.findByEmployeeEquals(emp);
         List<EmployeeQuizResponse> quizResponses = new ArrayList<>();
         for(EmployeeQuiz q : quizzes){
@@ -80,7 +87,8 @@ public class EmployeeService {
         return quizResponses;
     }
 
-    public List<EmployeeTopicResponse> getTopicsById(Employee emp){
+    public List<EmployeeTopicResponse> getTopicsById(long id){
+        Employee emp = empRepo.getOne(id);
         List<EmployeeTopic> topics =  empTopicRepo.findByEmployeeEquals(emp);
         List<EmployeeTopicResponse> topicResponses = new ArrayList<>();
         for(EmployeeTopic t : topics){
