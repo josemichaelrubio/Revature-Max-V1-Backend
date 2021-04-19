@@ -2,18 +2,22 @@ package com.revaturemax.dto;
 
 
 import com.revaturemax.projections.BatchSummary;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 @Component
 @Scope("prototype")
 public class BatchResponse implements Serializable {
+
     private BatchSummary batch;
-    private List<QuizAverage> quizAverage;
-    private List<CompetencyAverage> competencyAverage;
+    private List<QuizAverage> quizAverage = new ArrayList<>();
+    private List<CompetencyAverage> competencyAverage = new ArrayList<>();
 
     public BatchResponse() {}
 
@@ -21,12 +25,12 @@ public class BatchResponse implements Serializable {
         this.batch = batch;
     }
 
-    public void addQuizAverage(String quizName, double average) {
-        this.quizAverage.add(new QuizAverage(quizName, average));
+    public void addQuizAverage(String quizName, String average, String count) {
+        this.quizAverage.add(new QuizAverage(quizName, average, count));
     }
 
-    public void addCompetencyAverage(String topicName, double average) {
-        this.competencyAverage.add(new CompetencyAverage(topicName, average));
+    public void addCompetencyAverage(String topicName, String average, String count) {
+        this.competencyAverage.add(new CompetencyAverage(topicName, average, count));
     }
 
     public BatchSummary getBatch() {
@@ -78,13 +82,15 @@ public class BatchResponse implements Serializable {
     @Component
     private static class QuizAverage implements Serializable {
         private String quizName;
-        private double average;
+        private String average;
+        private String count;
 
         public QuizAverage() {}
 
-        public QuizAverage(String topicName, double average) {
+        public QuizAverage(String topicName, String average, String count) {
             this.quizName = topicName;
             this.average = average;
+            this.count = count;
         }
 
         public String getQuizName() {
@@ -95,32 +101,42 @@ public class BatchResponse implements Serializable {
             this.quizName = quizName;
         }
 
-        public double getAverage() {
+        public String getAverage() {
             return average;
         }
 
-        public void setAverage(double average) {
+        public void setAverage(String average) {
             this.average = average;
         }
+
+        public String getCount() {
+            return count;
+        }
+
+        public void setCount(String count) {
+            this.count = count;
+        }
+
 
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             QuizAverage that = (QuizAverage) o;
-            return Double.compare(that.average, average) == 0 && Objects.equals(quizName, that.quizName);
+            return Objects.equals(quizName, that.quizName) && Objects.equals(average, that.average) && Objects.equals(count, that.count);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(quizName, average);
+            return Objects.hash(quizName, average, count);
         }
 
         @Override
         public String toString() {
             return "QuizAverage{" +
                     "quizName='" + quizName + '\'' +
-                    ", average=" + average +
+                    ", average='" + average + '\'' +
+                    ", count='" + count + '\'' +
                     '}';
         }
     }
@@ -129,13 +145,15 @@ public class BatchResponse implements Serializable {
     private static class CompetencyAverage implements Serializable {
 
         private String topicName;
-        private double average;
+        private String average;
+        private String count;
 
         public CompetencyAverage() {}
 
-        public CompetencyAverage(String topicName, double average) {
+        public CompetencyAverage(String topicName, String average, String count) {
             this.topicName = topicName;
             this.average = average;
+            this.count = count;
         }
 
         public String getTopicName() {
@@ -146,12 +164,20 @@ public class BatchResponse implements Serializable {
             this.topicName = topicName;
         }
 
-        public double getAverage() {
+        public String getAverage() {
             return average;
         }
 
-        public void setAverage(double average) {
+        public void setAverage(String average) {
             this.average = average;
+        }
+
+        public String getCount() {
+            return count;
+        }
+
+        public void setCount(String count) {
+            this.count = count;
         }
 
         @Override
@@ -159,19 +185,20 @@ public class BatchResponse implements Serializable {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             CompetencyAverage that = (CompetencyAverage) o;
-            return Double.compare(that.average, average) == 0 && Objects.equals(topicName, that.topicName);
+            return Objects.equals(topicName, that.topicName) && Objects.equals(average, that.average) && Objects.equals(count, that.count);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(topicName, average);
+            return Objects.hash(topicName, average, count);
         }
 
         @Override
         public String toString() {
             return "CompetencyAverage{" +
                     "topicName='" + topicName + '\'' +
-                    ", average=" + average +
+                    ", average='" + average + '\'' +
+                    ", count='" + count + '\'' +
                     '}';
         }
     }

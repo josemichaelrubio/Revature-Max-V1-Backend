@@ -7,8 +7,11 @@ import com.revaturemax.models.Employee;
 import com.revaturemax.models.EmployeeQuiz;
 import com.revaturemax.models.EmployeeTopic;
 import com.revaturemax.models.Notes;
-import com.revaturemax.repositories.EmployeeRepository;
 import com.revaturemax.services.*;
+import com.revaturemax.services.BatchService;
+import com.revaturemax.services.EmployeeService;
+import com.revaturemax.services.NotesService;
+import com.revaturemax.services.TopicService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/employees")
 public class EmployeeController {
 
@@ -36,12 +40,6 @@ public class EmployeeController {
 
     @Autowired
     NotesService notesService;
-
-    private final EmployeeRepository repository;
-
-    EmployeeController(EmployeeRepository repository){
-        this.repository = repository;
-    }
 
     private static Logger logger = LogManager.getLogger(EmployeeController.class);
 
@@ -81,7 +79,6 @@ public class EmployeeController {
         }
 
         return ResponseEntity.ok().body(employeeResponse);
-
     }
 
     @DeleteMapping("{id}")
@@ -94,7 +91,7 @@ public class EmployeeController {
     @PutMapping("{id}")
     Employee updateEmployee(@RequestBody Employee newEmployee, @PathVariable Long id) {
 
-        return repository.findById(id)
+        /*return repository.findById(id)
                 .map(employee -> {
                     employee.setName(newEmployee.getName());
                     employee.setEmail(newEmployee.getEmail());
@@ -102,7 +99,8 @@ public class EmployeeController {
                     return repository.save(employee);
 
                 })
-                .orElse(null);
+                .orElse(null);*/
+        return null;
     }
 
     @PutMapping(value = "/{employee-id}/quizzes/{quiz-id}")
