@@ -9,9 +9,12 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class AuthController {
+
     private static Logger logger = LoggerFactory.getLogger(AuthController.class);
+
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestParam("username")String username, @RequestParam("password")String password){
+    public ResponseEntity<String> login(@RequestParam("username")String username,
+                                        @RequestParam("password")String password) {
         logger.info("Checking for authorization");
         if(username.equals("associate")){
             if(password.equals("123")){

@@ -1,15 +1,20 @@
 package com.revaturemax.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revaturemax.dto.EmployeeQuizResponse;
 import com.revaturemax.dto.EmployeeTopicResponse;
-import com.revaturemax.models.Employee;
-import com.revaturemax.models.EmployeeQuiz;
-import com.revaturemax.models.EmployeeTopic;
+import com.revaturemax.models.*;
 import com.revaturemax.repositories.EmployeeQuizRepository;
 import com.revaturemax.repositories.EmployeeRepository;
 import com.revaturemax.repositories.EmployeeTopicRepository;
+import com.revaturemax.repositories.PasswordRepository;
+import com.revaturemax.util.Passwords;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,11 +23,13 @@ import java.util.List;
 public class EmployeeService {
 
     @Autowired
+    ObjectMapper objectMapper;
+    @Autowired
     EmployeeRepository empRepo;
-
+    @Autowired
+    PasswordRepository passwordRepository;
     @Autowired
     EmployeeQuizRepository empQuizRepo;
-
     @Autowired
     EmployeeTopicRepository empTopicRepo;
 
@@ -30,8 +37,20 @@ public class EmployeeService {
         return empRepo.getOne(id);
     }
 
-    public Employee add(Employee employee) {
-        return empRepo.save(employee);
+    @Transactional
+    public ResponseEntity<String> createNewEmployee(String name, String email, String password) {
+        //validate params
+        Employee employee = new Employee(Role.ASSOCIATE, name, email);
+        byte[] salt = Passwords.getNewPasswordSalt();
+        byte[] hash = Passwords.getPasswordHash(password, salt);
+        employee = empRepo.save(employee);
+        passwordRepository.save(new Password(employee, salt, hash));
+        try {
+            return new ResponseEntity<String>(objectMapper.writer().writeValueAsString(employee), HttpStatus.CREATED);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     public void deleteEmployee(long id) {

@@ -1,5 +1,6 @@
 package com.revaturemax.models;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -15,10 +16,10 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table(name="quiz")
 @Component
 @JsonIgnoreProperties("hibernateLazyInitializer")
 @Scope("prototype")
+@JsonFilter("Quiz")
 public class Quiz {
 
     @Id
@@ -41,6 +42,10 @@ public class Quiz {
     private List<Topic> topics = new ArrayList<>();
 
     public Quiz() {}
+
+    public Quiz(Long id) {
+        this.id = id;
+    }
 
     public Quiz(CurriculumDay day, String name) {
         this.day = day;
@@ -100,4 +105,5 @@ public class Quiz {
     public int hashCode() {
         return Objects.hash(day, name, topics);
     }
+
 }

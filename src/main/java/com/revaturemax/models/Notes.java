@@ -1,5 +1,6 @@
 package com.revaturemax.models;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -9,6 +10,7 @@ import java.util.Objects;
 @Entity
 @Component
 @Scope("prototype")
+@JsonFilter("Notes")
 public class Notes {
 
     @Id

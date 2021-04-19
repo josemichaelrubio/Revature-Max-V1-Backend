@@ -1,5 +1,6 @@
 package com.revaturemax.models;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -9,6 +10,7 @@ import java.util.Objects;
 @Entity
 @Component
 @Scope("prototype")
+@JsonFilter("Topic")
 public class Topic {
 
     @Id
@@ -23,7 +25,11 @@ public class Topic {
 
     public Topic() {}
 
-    public Topic(String name){
+    public Topic(Long id) {
+        this.id = id;
+    }
+
+    public Topic(String name) {
         this.name=name;
     }
 

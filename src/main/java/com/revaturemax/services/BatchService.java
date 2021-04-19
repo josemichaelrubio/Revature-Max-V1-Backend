@@ -1,7 +1,5 @@
 package com.revaturemax.services;
 
-
-import com.revaturemax.models.CurriculumDay;
 import com.revaturemax.models.Employee;
 import com.revaturemax.repositories.BatchRepository;
 import com.revaturemax.repositories.CurriculumDayRepository;
@@ -32,13 +30,6 @@ public class BatchService {
 
     @Autowired
     private EmployeeQuizRepository employeeQuizRepository;
-
-    public List<CurriculumDay> getCurriculum(long batchId) {
-        long employeeId = 1; //TODO: pull id from JWT or passed as param
-        List<CurriculumDay> curriculum = curriculumDayRepository.findCurriculumByBatchId(batchId);
-        curriculum.sort(Comparator.comparing(CurriculumDay::getDate));
-        return curriculum;
-    }
 
     public long getByAssociate(Employee emp){
         return batchRepository.findBatchIdByEmployeeId(emp.getId());
@@ -123,6 +114,5 @@ public class BatchService {
         }
 
     }
-
 
 }
