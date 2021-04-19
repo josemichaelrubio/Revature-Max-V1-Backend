@@ -59,11 +59,11 @@ public class TopicController {
     }
 
     @PostMapping
-    public ResponseEntity<Topic> postNewTopic(@RequestBody Topic topic, @RequestHeader("Authorization")String token){
+    public ResponseEntity<HttpStatus> postNewTopic(@RequestBody Topic topic, @RequestHeader("Authorization")String token){
         if(jwtUtil.getRoleFromToken(token).equals(Role.INSTRUCTOR)){
             logger.info("Instructor creating new topic");
-            Topic newTopic = topicService.create(topic);
-            return new ResponseEntity<>(newTopic, HttpStatus.CREATED);
+            topicService.create(topic);
+            return new ResponseEntity<>(HttpStatus.CREATED);
         }
 
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -77,10 +77,11 @@ public class TopicController {
      */
 
     @PutMapping
-    public ResponseEntity<Topic> updateTopic(@PathVariable long id, @RequestBody TopicRequest topic, @RequestHeader("Authorization")String token){
+    public ResponseEntity<HttpStatus> updateTopic(@PathVariable long id, @RequestBody TopicRequest topic, @RequestHeader("Authorization")String token){
         if(jwtUtil.getRoleFromToken(token).equals(Role.INSTRUCTOR)){
             logger.info("Instructor creating new topic");
-            return ResponseEntity.ok().body(topicService.update(id, topic));
+            topicService.update(id, topic);
+            return new ResponseEntity<>(HttpStatus.CREATED);
         }
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
