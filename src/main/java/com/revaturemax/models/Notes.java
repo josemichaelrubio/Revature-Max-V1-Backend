@@ -1,10 +1,7 @@
 package com.revaturemax.models;
 
-<<<<<<< HEAD
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-=======
 import com.fasterxml.jackson.annotation.JsonFilter;
->>>>>>> 1277c071698a2a6bb7163be84302beb36f769214
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -14,11 +11,8 @@ import java.util.Objects;
 @Entity
 @Component
 @Scope("prototype")
-<<<<<<< HEAD
 @JsonIgnoreProperties("hibernateLazyInitializer")
-=======
 @JsonFilter("Notes")
->>>>>>> 1277c071698a2a6bb7163be84302beb36f769214
 public class Notes {
 
     @Id
