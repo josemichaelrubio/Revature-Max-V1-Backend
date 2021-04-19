@@ -15,7 +15,6 @@ import java.util.Objects;
 @Scope("prototype")
 public class BatchResponse implements Serializable {
 
-    Logger logger = LogManager.getLogger(BatchResponse.class);
     private BatchSummary batch;
     private List<QuizAverage> quizAverage = new ArrayList<>();
     private List<CompetencyAverage> competencyAverage = new ArrayList<>();
