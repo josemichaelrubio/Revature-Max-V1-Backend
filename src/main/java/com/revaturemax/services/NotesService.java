@@ -1,6 +1,7 @@
 package com.revaturemax.services;
 
 import com.revaturemax.models.Notes;
+import com.revaturemax.models.Topic;
 import com.revaturemax.repositories.NotesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -8,8 +9,17 @@ import org.springframework.stereotype.Service;
 @Service
 public class NotesService {
 
+
     @Autowired
     private NotesRepository notesRepository;
+
+    void EmployeeController(NotesRepository notesRepository){
+        this.notesRepository = notesRepository;
+    }
+
+    public Notes addNotes(Notes notes) {
+        return notesRepository.save(notes);
+    }
 
     public void setNotes(long batchId, Notes notes) {
         validateNotes(notes);
@@ -27,4 +37,18 @@ public class NotesService {
         //check topic set
     }
 
+    public void deleteNotes(long id) { notesRepository.deleteById(id);
+    }
+
+   public Notes updateNotes(Long id, Notes newNotes){
+       Notes updateN = notesRepository.getOne(id);
+       updateN.setNotes(newNotes.getNotes());
+//       updateN.setTopic(newNotes.getTopic());
+       notesRepository.save(updateN);
+       return updateN;
+    }
+
+
+    public void updateNotes(Long id) {
+    }
 }

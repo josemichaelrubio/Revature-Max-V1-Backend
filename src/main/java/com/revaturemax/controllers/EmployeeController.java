@@ -3,10 +3,16 @@ package com.revaturemax.controllers;
 import com.revaturemax.dto.EmployeeQuizResponse;
 import com.revaturemax.dto.EmployeeResponse;
 import com.revaturemax.dto.EmployeeTopicResponse;
+import com.revaturemax.dto.TopicRequest;
 import com.revaturemax.models.Employee;
+import com.revaturemax.models.EmployeeTopic;
+import com.revaturemax.models.Notes;
+import com.revaturemax.models.Topic;
 import com.revaturemax.repositories.EmployeeRepository;
 import com.revaturemax.services.BatchService;
 import com.revaturemax.services.EmployeeService;
+import com.revaturemax.services.NotesService;
+import com.revaturemax.services.TopicService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +20,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.annotation.Repeatable;
 import java.util.List;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/employees")
 public class EmployeeController {
 
@@ -26,9 +34,20 @@ public class EmployeeController {
     @Autowired
     BatchService batchService;
 
-    private final EmployeeRepository repository;
+    @Autowired
+    private TopicService eService;
 
-    EmployeeController(EmployeeRepository repository){
+    @Autowired
+    NotesService notesService;
+
+
+
+// EmployeeTopic tRepo;
+// EmployeeController(EmployeeTopic tRepo){
+//     this.tRepo = tRepo;
+// }
+ EmployeeRepository repository;
+ EmployeeController(EmployeeRepository repository){
         this.repository = repository;
     }
 
@@ -63,12 +82,36 @@ public class EmployeeController {
                 })
                 .orElse(null);
     }
-    
-        /*
-        TODO:
-            -Continue Employee Endpoints
-            -Access other models?
-         */
+
+//    @PutMapping("{id}/topics/{topics-id}")
+//    public ResponseEntity<Topic> updateTopic(@PathVariable long id, @RequestBody TopicRequest topic){
+//        //authenticate instructor
+//        logger.info("Instructor creating new topic");
+//        return ResponseEntity.ok().body(topicService.update(id, topic));
+//    }
+
+    @PostMapping("{id}/notes")
+    public ResponseEntity<Notes> createNotes(@RequestBody Notes notes){
+        logger.info("Adding a new Notes: {}", notes);
+        notesService.addNotes(notes);
+        return new ResponseEntity<>(notes, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("{id}/notes/{id}")
+    public ResponseEntity<HttpStatus> deleteNotes(@PathVariable long id){
+        logger.info("Deleting an Notes with id: {}", id);
+        notesService.deleteNotes(id);
+        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+    }
+
+    @PutMapping("{id}/notes/{id}")
+    public ResponseEntity<Notes> updateNotes(@RequestBody Notes newNotes, @PathVariable Long id){
+        logger.info("Updating notes with id: {}", id);
+        notesService.updateNotes(id);
+        return ResponseEntity.ok().body(notesService.updateNotes(id,newNotes));
+    }
+    //no session LazyInitializationException
+
 
 
 
@@ -100,7 +143,7 @@ public class EmployeeController {
         }
 
         return ResponseEntity.ok().body(employeeResponse);
-
     }
+
 
 }
