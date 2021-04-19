@@ -18,7 +18,7 @@ public interface EmployeeTopicRepository extends JpaRepository<EmployeeTopic, Em
     @Query("SELECT et FROM EmployeeTopic et LEFT JOIN FETCH et.employee WHERE et.id = :id")
     public EmployeeTopic getEmployeeTopicById(@Param("id") EmployeeTopicId id);
 
-    //"SELECT et FROM EmployeeTopic et LEFT JOIN FETCH
-    // //@Query("SELECT eq FROM EmployeeTopic eq, Batch b LEFT JOIN FETCH eq.topic AS t LEFT JOIN FETCH t.tag WHERE b.id = :batchId AND eq.employee MEMBER OF b.associates ORDER BY t.tag.id")"
+    @Query("SELECT eq FROM EmployeeTopic eq, Batch b LEFT JOIN FETCH eq.topic AS t LEFT JOIN FETCH t.tag WHERE b.id = :batchId AND eq.employee MEMBER OF b.associates ORDER BY t.tag.id")
+    public List<EmployeeTopic> getEmployeeTopicsByBatchIdAndSort(@Param("batchId") long batchId);
 
 }

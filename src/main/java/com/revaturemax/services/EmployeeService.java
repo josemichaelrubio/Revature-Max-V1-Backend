@@ -33,6 +33,7 @@ public class EmployeeService {
     @Autowired
     EmployeeTopicRepository empTopicRepo;
 
+
     public Employee getById(long id){
         return empRepo.getOne(id);
     }
@@ -76,5 +77,13 @@ public class EmployeeService {
         }
         return topicResponses;
     }
+//
+//    public EmployeeTopic update(EmployeeTopicId id, EmployeeTopicResponse empTopic){
+//        EmployeeTopic updateTopic = empTopicRepo.getOne(id);
+//        updateTopic.setCompetency(empTopic.getCompetency());
+//        updateTopic.setFavNotes(empTopic.;
+//        empTopicRepo.save(updateTopic);
+//        return updateTopic;
+//    }
 
 }

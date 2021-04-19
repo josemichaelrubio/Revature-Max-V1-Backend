@@ -1,8 +1,6 @@
 package com.revaturemax.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
-import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.revaturemax.models.Notes;
 import com.revaturemax.repositories.NotesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +32,17 @@ public class NotesService {
 
     private void validateNotes(Notes notes) {
         //check topic set
+    }
+
+    public void deleteNotes(long id) { notesRepository.deleteById(id);
+    }
+
+   public Notes updateNotes(Long id, Notes newNotes){
+       Notes updateN = notesRepository.getOne(id);
+       updateN.setNotes(newNotes.getNotes());
+//       updateN.setTopic(newNotes.getTopic());
+       notesRepository.save(updateN);
+       return updateN;
     }
 
 }

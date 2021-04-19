@@ -32,9 +32,10 @@ public class BatchController {
     @Autowired
     private TopicService topicService;
 
+    @ResponseBody
     @GetMapping(value = "/{batch-id}", produces = "application/json")
-    public BatchResponse handleGetBatchInfoById(@PathVariable("batch-id") long id) {
-        return batchService.getBatchInfoAndAveragesById(id);
+    public ResponseEntity<BatchResponse> handleGetBatchInfoById(@PathVariable("batch-id") long id) {
+        return ResponseEntity.ok(batchService.getBatchInfoAndAveragesById(id));
     }
 
     @GetMapping(value = "/{batch-id}/curriculum", produces = "application/json")
