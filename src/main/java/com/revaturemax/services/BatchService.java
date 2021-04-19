@@ -1,17 +1,15 @@
 package com.revaturemax.services;
 
 
+import com.revaturemax.models.Batch;
 import com.revaturemax.models.CurriculumDay;
 import com.revaturemax.models.Employee;
-import com.revaturemax.repositories.BatchRepository;
-import com.revaturemax.repositories.CurriculumDayRepository;
+import com.revaturemax.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.revaturemax.dto.BatchResponse;
 import com.revaturemax.models.EmployeeQuiz;
 import com.revaturemax.projections.BatchSummary;
-import com.revaturemax.repositories.EmployeeQuizRepository;
-import com.revaturemax.repositories.QuizRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.util.*;
@@ -33,6 +31,9 @@ public class BatchService {
     @Autowired
     private EmployeeQuizRepository employeeQuizRepository;
 
+    @Autowired
+    private EmployeeRepository employeeRepository;
+
     public List<CurriculumDay> getCurriculum(long batchId) {
         long employeeId = 1; //TODO: pull id from JWT or passed as param
         List<CurriculumDay> curriculum = curriculumDayRepository.findCurriculumByBatchId(batchId);
@@ -40,8 +41,8 @@ public class BatchService {
         return curriculum;
     }
 
-    public long getByAssociate(Employee emp){
-        return batchRepository.findBatchIdByEmployeeId(emp.getId());
+    public long getByAssociate(long id){
+        return batchRepository.findBatchIdByEmployeeId(id);
     }
 
     public BatchResponse getBatchInfoAndAveragesById(long id) {
@@ -122,6 +123,39 @@ public class BatchService {
             return o1.compareTo(o2);
         }
 
+    }
+
+    // All methods for manipulating associates listed under batch
+
+    public List<Employee> getAllAssociates(long batchId){
+        Batch batch = batchRepository.getBatchById(batchId);
+        if(batch!=null){
+            return batch.getAssociates();
+        }
+        return new ArrayList<>();
+    }
+
+    public List<Employee> addAssociate(long batchId, List<Employee> employees){
+        Batch batch = batchRepository.getBatchById(batchId);
+        if(batch!=null){
+
+            for(Employee e : employees){
+                batch.addAssociate(e);
+            }
+
+            return batchRepository.save(batch).getAssociates();
+        }
+        return new ArrayList<>();
+    }
+
+    public void deleteAssociate(long batchId, long empId){
+        Batch batch = batchRepository.getBatchById(batchId);
+        Employee emp = employeeRepository.getOne(empId);
+        if(batch!=null){
+
+            batch.removeAssociate(emp);
+            batchRepository.save(batch);
+        }
     }
 
 

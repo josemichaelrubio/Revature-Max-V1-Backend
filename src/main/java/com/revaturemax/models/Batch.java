@@ -1,20 +1,8 @@
 package com.revaturemax.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.revaturemax.dto.EmployeeQuizResponse;
-import com.revaturemax.dto.EmployeeResponse;
-import com.revaturemax.dto.EmployeeTopicResponse;
-import com.revaturemax.repositories.EmployeeRepository;
-import com.revaturemax.services.BatchService;
-import com.revaturemax.services.EmployeeService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;

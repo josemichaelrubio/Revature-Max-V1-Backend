@@ -1,5 +1,6 @@
 package com.revaturemax.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -10,6 +11,7 @@ import java.util.Objects;
 @Entity
 @Component
 @Scope("prototype")
+@JsonIgnoreProperties("hibernateLazyInitializer")
 public class Password {
 
     @Id

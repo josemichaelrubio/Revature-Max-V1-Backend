@@ -1,12 +1,13 @@
 package com.revaturemax.controllers;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.revaturemax.dto.EmployeeQuizResponse;
 import com.revaturemax.dto.EmployeeResponse;
 import com.revaturemax.dto.EmployeeTopicResponse;
 import com.revaturemax.models.Employee;
-import com.revaturemax.repositories.EmployeeRepository;
 import com.revaturemax.services.BatchService;
 import com.revaturemax.services.EmployeeService;
+import com.revaturemax.util.JwtUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,20 +27,21 @@ public class EmployeeController {
     @Autowired
     BatchService batchService;
 
-    private final EmployeeRepository repository;
+    @Autowired
+    JwtUtil jwtUtil;
 
-    EmployeeController(EmployeeRepository repository){
-        this.repository = repository;
-    }
 
     private static Logger logger = LogManager.getLogger(EmployeeController.class);
 
-    @PostMapping(consumes = "application/json")
-    public ResponseEntity<Employee> createNewEmployee(@RequestBody Employee employee){
-        logger.info("Adding a new employee: {}", employee);
-        empService.add(employee);
-        return new ResponseEntity<>(employee, HttpStatus.CREATED);
+    @PostMapping(consumes = "application/x-www-form-urlencoded")
+    public ResponseEntity<Employee> createNewEmployee(@RequestParam("name") String name,
+                                                      @RequestParam("email") String email,
+                                                      @RequestParam("password") String password,
+                                                      @RequestParam("role") String role) {
+        logger.info("POST /employees received");
+        return ResponseEntity.ok().body(empService.createNewEmployee(name, email, password, role));
     }
+
 
 
 
@@ -53,15 +55,7 @@ public class EmployeeController {
     @PutMapping("{id}")
     Employee updateEmployee(@RequestBody Employee newEmployee, @PathVariable Long id) {
 
-        return repository.findById(id)
-                .map(employee -> {
-                    employee.setName(newEmployee.getName());
-                    employee.setEmail(newEmployee.getEmail());
-                    logger.info("Updating employee details");
-                    return repository.save(employee);
-
-                })
-                .orElse(null);
+        return null;
     }
     
         /*
@@ -73,33 +67,34 @@ public class EmployeeController {
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<EmployeeResponse> getEmployeeInfo(@PathVariable long id){
-        EmployeeResponse employeeResponse = new EmployeeResponse();
+    public ResponseEntity<EmployeeResponse> getEmployeeInfo(@PathVariable long id, @RequestHeader("Authorization") String token){
 
-        Employee emp = empService.getById(id);
+        if(jwtUtil.authorizeEmployee(token, id)){
+            EmployeeResponse employeeResponse = new EmployeeResponse();
 
-        employeeResponse.setName(emp.getName());
+            EmployeeResponse emp = empService.getEmployeeInfo(id, employeeResponse);
 
-        employeeResponse.setRole(emp.getRole());
+            long batchId = batchService.getByAssociate(id);
 
-        long batchId = batchService.getByAssociate(emp);
+            if(batchId>0){
+                employeeResponse.setBatchId(batchId);
+            }
 
-        if(batchId>0){
-            employeeResponse.setBatchId(batchId);
+            List<EmployeeQuizResponse> quizzes = empService.getQuizzesById(id);
+
+            if(quizzes!=null){
+                employeeResponse.setQuizzes(quizzes);
+            }
+
+            List<EmployeeTopicResponse> topics = empService.getTopicsById(id);
+            if(topics!=null){
+                employeeResponse.setTopics(topics);
+            }
+
+            return ResponseEntity.ok().body(employeeResponse);
         }
 
-        List<EmployeeQuizResponse> quizzes = empService.getQuizzesById(emp);
-
-        if(quizzes!=null){
-            employeeResponse.setQuizzes(quizzes);
-        }
-
-        List<EmployeeTopicResponse> topics = empService.getTopicsById(emp);
-        if(topics!=null){
-            employeeResponse.setTopics(topics);
-        }
-
-        return ResponseEntity.ok().body(employeeResponse);
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 
     }
 
