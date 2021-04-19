@@ -1,7 +1,7 @@
 package com.revaturemax.util;
 
-import com.revaturemax.model.Employee;
-import com.revaturemax.model.Role;
+import com.revaturemax.models.Employee;
+import com.revaturemax.models.Role;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

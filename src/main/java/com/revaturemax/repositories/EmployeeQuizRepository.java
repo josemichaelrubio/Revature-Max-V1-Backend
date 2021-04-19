@@ -17,7 +17,7 @@ public interface EmployeeQuizRepository extends JpaRepository<EmployeeQuiz, Empl
     @Query("SELECT eq FROM EmployeeQuiz eq, Batch b LEFT JOIN FETCH eq.employee LEFT JOIN FETCH eq.quiz WHERE b.id = :batchId AND eq.employee MEMBER OF b.associates ")
     List<EmployeeQuiz> findEmployeeQuizzesByBatchId(@Param("batchId") long batchId);
 
-    @Query("SELECT eq FROM EmployeeQuiz eq, Batch b WHERE b.id = :batchId AND eq.employee MEMBER OF b.associates ORDER BY eq.quiz.id asc")
+    @Query("SELECT eq FROM EmployeeQuiz eq, Batch b LEFT JOIN FETCH eq.employee LEFT JOIN FETCH eq.quiz WHERE b.id = :batchId AND eq.employee MEMBER OF b.associates ORDER BY eq.quiz.id asc")
     List<EmployeeQuiz> findEmployeeQuizzesByBatchIdAndSort(@Param("batchId") long batchId);
 
 

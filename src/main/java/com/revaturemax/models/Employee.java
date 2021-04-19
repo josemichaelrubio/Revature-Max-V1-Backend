@@ -27,6 +27,10 @@ public class Employee {
 
     public Employee() {}
 
+    public Employee(long id) {
+        this.id = id;
+    }
+
     public Employee(Role role, String name, String email) {
         this.role = role;
         this.name = name;

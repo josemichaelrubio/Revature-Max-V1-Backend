@@ -13,6 +13,8 @@ public class CurriculumResponse {
         private class QuizDetails {
 
         }
+
+
     }
 
 }

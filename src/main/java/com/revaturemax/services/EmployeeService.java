@@ -1,5 +1,7 @@
 package com.revaturemax.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revaturemax.dto.EmployeeQuizResponse;
 import com.revaturemax.dto.EmployeeResponse;
 import com.revaturemax.dto.EmployeeTopicResponse;
@@ -12,6 +14,8 @@ import com.revaturemax.util.Passwords;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,23 +29,23 @@ public class EmployeeService {
     private static final Logger logger = LogManager.getLogger(EmployeeService.class);
 
     @Autowired
+    ObjectMapper objectMapper;
+    @Autowired
     EmployeeRepository empRepo;
-
+    @Autowired
+    PasswordRepository passwordRepository;
     @Autowired
     EmployeeQuizRepository empQuizRepo;
-
     @Autowired
     EmployeeTopicRepository empTopicRepo;
 
-    @Autowired
-    PasswordRepository passwordRepository;
 
     public Employee getById(long id){
         return empRepo.getOne(id);
     }
 
-    @Transactional
-    public EmployeeResponse getEmployeeInfo(long id, EmployeeResponse employeeResponse){
+
+    public EmployeeResponse getEmployeeInfo(long id, EmployeeResponse employeeResponse) {
         Employee emp = empRepo.getOne(id);
 
         employeeResponse.setName(emp.getName());
@@ -52,22 +56,19 @@ public class EmployeeService {
     }
 
     @Transactional
-    public Employee createNewEmployee(String name, String email, String password, String role) {
-        Role empRole;
-
-        if(role.equals("INSTRUCTOR")){
-            empRole = Role.INSTRUCTOR;
-        } else {
-            empRole = Role.ASSOCIATE;
-        }
-
+    public ResponseEntity<String> createNewEmployee(String name, String email, String password) {
         //validate params
-        Employee employee = new Employee(empRole, name, email);
+        Employee employee = new Employee(Role.ASSOCIATE, name, email);
         byte[] salt = Passwords.getNewPasswordSalt();
         byte[] hash = Passwords.getPasswordHash(password, salt);
         employee = empRepo.save(employee);
         passwordRepository.save(new Password(employee, salt, hash));
-        return employee;
+        try {
+            return new ResponseEntity<String>(objectMapper.writer().writeValueAsString(employee), HttpStatus.CREATED);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 
@@ -96,6 +97,14 @@ public class EmployeeService {
         }
         return topicResponses;
     }
+//
+//    public EmployeeTopic update(EmployeeTopicId id, EmployeeTopicResponse empTopic){
+//        EmployeeTopic updateTopic = empTopicRepo.getOne(id);
+//        updateTopic.setCompetency(empTopic.getCompetency());
+//        updateTopic.setFavNotes(empTopic.;
+//        empTopicRepo.save(updateTopic);
+//        return updateTopic;
+//    }
 
     public Employee getByEmail(String email){
         return empRepo.findByEmail(email);
