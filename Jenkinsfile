@@ -24,7 +24,7 @@ pipeline {
       }
       stage('package') {
          steps {
-            sh 'sh gradlew fatJar'
+            sh 'sh gradlew bootJar'
          }
       }
       stage('remove previous image') {
