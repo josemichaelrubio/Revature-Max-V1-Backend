@@ -10,6 +10,7 @@ import com.revaturemax.services.TopicService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,9 +31,10 @@ public class BatchController {
     @Autowired
     private TopicService topicService;
 
+    @ResponseBody
     @GetMapping(value = "/{batch-id}", produces = "application/json")
-    public BatchResponse handleGetBatchInfoById(@PathVariable("batch-id") long id) {
-        return batchService.getBatchInfoAndAveragesById(id);
+    public ResponseEntity<BatchResponse> handleGetBatchInfoById(@PathVariable("batch-id") long id) {
+        return ResponseEntity.ok(batchService.getBatchInfoAndAveragesById(id));
     }
 
     @GetMapping(value = "/{batch-id}/curriculum", produces = "application/json")
