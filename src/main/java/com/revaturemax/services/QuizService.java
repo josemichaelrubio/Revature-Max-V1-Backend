@@ -6,6 +6,8 @@ import com.revaturemax.repositories.CurriculumDayRepository;
 import com.revaturemax.repositories.EmployeeQuizRepository;
 import com.revaturemax.repositories.QuizRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
@@ -23,7 +25,7 @@ public class QuizService {
     @Autowired
     private EmployeeQuizRepository employeeQuizRepository;
 
-    public void setNewQuiz(long batchId, Quiz quiz) {
+    public ResponseEntity<String> setNewQuiz(long batchId, Quiz quiz) {
         //Batch batch = authorizeBatchInstructorAccess(batchId, employeeId);
         //validateQuiz(quiz);
         Date date = quiz.getDay().getDate();
@@ -35,21 +37,24 @@ public class QuizService {
             curriculumDayRepository.save(quiz.getDay());
         }
         quizRepository.save(quiz);
+        return new ResponseEntity<String>(HttpStatus.OK);
     }
 
-    public void updateQuiz(long batchId, Quiz quiz) {
+    public ResponseEntity<String> updateQuiz(long batchId, Quiz quiz) {
         //Batch batch = authorizeBatchInstructorAccess(batchId, employeeId);
         //validateQuizBelongingToBatch(Batch batch, long quizId);
         quizRepository.save(quiz);
+        return new ResponseEntity<String>(HttpStatus.OK);
     }
 
-    public void removeQuiz(long batchId, long quizId) {
+    public ResponseEntity<String> removeQuiz(long batchId, long quizId) {
         //Batch batch = authorizeBatchInstructorAccess(batchId, employeeId);
         //validateQuizBelongingToBatch(Batch batch, long quizId);
         quizRepository.deleteById(quizId);
+        return new ResponseEntity<String>(HttpStatus.OK);
     }
 
-    public void setEmployeeQuiz(long employeeId, long quizId, EmployeeQuiz employeeQuiz) {
+    public ResponseEntity<String> setEmployeeQuiz(long employeeId, long quizId, EmployeeQuiz employeeQuiz) {
         //assert JWT.id = employeeId
         if (!quizRepository.existsById(quizId)) {
             //404
@@ -57,6 +62,7 @@ public class QuizService {
         employeeQuiz.setEmployee(new Employee(employeeId));
         employeeQuiz.setQuiz(new Quiz(quizId));
         employeeQuizRepository.save(employeeQuiz);
+        return new ResponseEntity<String>(HttpStatus.OK);
     }
 
     private Batch authorizeBatchInstructorAccess(long batchId, long employeeId) throws Exception {

@@ -1,5 +1,6 @@
 package com.revaturemax.dto;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
 import com.revaturemax.models.Employee;
 import com.revaturemax.models.Topic;
 import org.springframework.context.annotation.Scope;

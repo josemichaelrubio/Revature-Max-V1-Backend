@@ -1,16 +1,21 @@
 package com.revaturemax.services;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.revaturemax.dto.TopicRequest;
 import com.revaturemax.dto.TopicResponse;
 import com.revaturemax.models.*;
 import com.revaturemax.repositories.BatchRepository;
-import com.revaturemax.repositories.CurriculumDayRepository;
 import com.revaturemax.repositories.TopicRepository;
 import com.revaturemax.repositories.TopicTagRepository;
 import com.revaturemax.repositories.EmployeeTopicRepository;
 import com.revaturemax.repositories.NotesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -21,20 +26,15 @@ import java.util.Map;
 public class TopicService {
 
     @Autowired
+    private ObjectMapper objectMapper;
+    @Autowired
     TopicRepository topicRepository;
-
     @Autowired
     TopicTagRepository topicTagRepository;
-
     @Autowired
     BatchRepository batchRepository;
-
-    @Autowired
-    CurriculumDayRepository curriculumDayRepo;
-
     @Autowired
     EmployeeTopicRepository employeeTopicRepository;
-
     @Autowired
     NotesRepository notesRepository;
 
@@ -48,7 +48,7 @@ public class TopicService {
         employeeTopicRepository.save(employeeTopic);
     }
 
-    public TopicResponse getTopic(long batchId, long topicId) {
+    public ResponseEntity<String> getTopic(long batchId, long topicId) {
         long employeeId = 1; //TODO: pull id from JWT or passed as param
         Topic topic = topicRepository.getTopicById(topicId);
         if (topic == null) {
@@ -82,7 +82,15 @@ public class TopicService {
         }
         topicResponse.sortNotes();
 
-        return topicResponse;
+        try {
+            SimpleFilterProvider filter = new SimpleFilterProvider();
+            filter.addFilter("Topic", SimpleBeanPropertyFilter.serializeAll());
+            return new ResponseEntity<String>(objectMapper.writer(filter).writeValueAsString(topicResponse),
+                    HttpStatus.OK);
+        } catch (JsonProcessingException exception) {
+            exception.printStackTrace();
+            return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     // all '/tags' methods are implemented for testing features

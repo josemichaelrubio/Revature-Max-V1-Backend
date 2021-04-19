@@ -46,11 +46,11 @@ public class EmployeeController {
     private static Logger logger = LogManager.getLogger(EmployeeController.class);
 
     @PostMapping(consumes = "application/x-www-form-urlencoded")
-    public ResponseEntity<Employee> createNewEmployee(@RequestParam("name") String name,
+    public ResponseEntity<String> createNewEmployee(@RequestParam("name") String name,
                                                       @RequestParam("email") String email,
                                                       @RequestParam("password") String password) {
         logger.info("POST /employees received");
-        return ResponseEntity.ok().body(empService.createNewEmployee(name, email, password));
+        return empService.createNewEmployee(name, email, password);
     }
 
     @GetMapping("/{id}")
@@ -126,11 +126,11 @@ public class EmployeeController {
     }
 
     @PutMapping(value = "/{employee-id}/notes")
-    public ResponseEntity<Notes> setNotes(@PathVariable("employeeId") long employeeId,
+    public ResponseEntity<String> setNotes(@PathVariable("employeeId") long employeeId,
                                           @RequestBody Notes notes) {
         //authorize JWT
         logger.info("PUT /employees/{}/notes received", employeeId);
-        return ResponseEntity.ok().body(notesService.setNotes(employeeId, notes));
+        return notesService.setNotes(employeeId, notes);
     }
 
 }

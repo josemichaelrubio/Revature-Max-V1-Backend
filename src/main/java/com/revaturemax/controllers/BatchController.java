@@ -2,8 +2,6 @@ package com.revaturemax.controllers;
 
 import com.revaturemax.dto.BatchResponse;
 import com.revaturemax.dto.CurriculumRequest;
-import com.revaturemax.dto.TopicResponse;
-import com.revaturemax.models.CurriculumDay;
 import com.revaturemax.models.Quiz;
 import com.revaturemax.services.BatchService;
 import com.revaturemax.services.CurriculumService;
@@ -12,9 +10,8 @@ import com.revaturemax.services.TopicService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/batches")
@@ -41,49 +38,49 @@ public class BatchController {
     }
 
     @GetMapping(value = "/{batch-id}/curriculum", produces = "application/json")
-    public List<CurriculumDay> getCurriculum(@PathVariable("batch-id") long batchId) {
+    public ResponseEntity<String> getCurriculum(@PathVariable("batch-id") long batchId) {
         //TODO - authenticate token
         logger.info("GET /batches/{}/curriculum received", batchId);
-        return batchService.getCurriculum(batchId);
+        return curriculumService.getCurriculum(batchId);
     }
 
     @PutMapping(value = "/{batch-id}/curriculum", consumes = "application/json")
-    public void setCurriculum(@PathVariable("batch-id") long batchId,
+    public ResponseEntity<String> setCurriculum(@PathVariable("batch-id") long batchId,
                               @RequestBody CurriculumRequest curriculumRequest) {
         //TODO - authenticate token
         logger.info("PUT /batches/{}/curriculum received", batchId);
-        curriculumService.setCurriculumDay(batchId, curriculumRequest);
+        return curriculumService.setCurriculumDay(batchId, curriculumRequest);
     }
 
-    @PostMapping(value = "/{batch-id}/quizzes")
-    public void postQuiz(@PathVariable("batch-id") long batchId,
+    @PostMapping(value = "/{batch-id}/quizzes", consumes = "application/json")
+    public ResponseEntity<String> postQuiz(@PathVariable("batch-id") long batchId,
                          @RequestBody Quiz quiz) {
         //TODO - authenticate token
         logger.info("POST /batches/{}/quizzes received", batchId);
-        quizService.setNewQuiz(batchId, quiz);
+        return quizService.setNewQuiz(batchId, quiz);
     }
 
-    @PutMapping(value = "/{batch-id}/quizzes/{quiz-id}")
-    public void putQuiz(@PathVariable("batch-id") long batchId,
+    @PutMapping(value = "/{batch-id}/quizzes/{quiz-id}", consumes = "application/json")
+    public ResponseEntity<String> putQuiz(@PathVariable("batch-id") long batchId,
                         @PathVariable("quiz-id") long quizId,
                         @RequestBody Quiz quiz) {
         //TODO - authenticate token
         logger.info("PUT /batches/{}/quizzes/{} received", batchId, quizId);
         quiz.setId(quizId);
-        quizService.updateQuiz(batchId, quiz);
+        return quizService.updateQuiz(batchId, quiz);
     }
 
     @DeleteMapping(value = "/{batch-id}/quizzes/{quiz-id}")
-    public void deleteQuiz(@PathVariable("batch-id") long batchId,
+    public ResponseEntity<String> deleteQuiz(@PathVariable("batch-id") long batchId,
                            @PathVariable("quiz-id") long quizId) {
         //TODO - authenticate token
         logger.info("DELETE /batches/{}/quizzes/{} received", batchId, quizId);
-        quizService.removeQuiz(batchId, quizId);
+        return quizService.removeQuiz(batchId, quizId);
     }
 
     @GetMapping(value = "/{batch-id}/topics/{topic-id}", produces = "application/json")
-    public TopicResponse getTopic(@PathVariable("batch-id") long batchId,
-                                  @PathVariable("topic-id") long topicId) {
+    public ResponseEntity<String> getTopic(@PathVariable("batch-id") long batchId,
+                                           @PathVariable("topic-id") long topicId) {
         //TODO - authenticate token
         logger.info("GET /batches/{}/topics/{} received", batchId, topicId);
         return topicService.getTopic(batchId, topicId);
