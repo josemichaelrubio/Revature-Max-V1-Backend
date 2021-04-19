@@ -5,16 +5,15 @@ pipeline {
         PORT="80"
         IMAGE_TAG="revature-max-image"
         CONTAINER_NAME="revature-max-container"
-        DB_URL=credentials('')
-        DB_USER=credentials('')
-        DB_PASS=credentials('')
+        DB_URL=credentials('DB_URL')
+        DB_USER=credentials('DB_USER')
+        DB_PASS=credentials('DB_PASS')
     }
 
    stages {
       stage('checkout'){
           steps {
                git branch: 'master',
-               credentialsId: '',
                url: 'https://gitlab.com/210301-java-azure/p2-revengers/revature-max-backend.git'
            }
       }
