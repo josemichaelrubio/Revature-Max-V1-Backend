@@ -1,6 +1,11 @@
 package com.revaturemax.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.revaturemax.models.*;
+import com.revaturemax.projections.QuizAverage;
 import com.revaturemax.repositories.BatchRepository;
 import com.revaturemax.repositories.CurriculumDayRepository;
 import com.revaturemax.repositories.EmployeeQuizRepository;
@@ -11,11 +16,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class QuizService {
 
+    @Autowired
+    private ObjectMapper objectMapper;
     @Autowired
     private QuizRepository quizRepository;
     @Autowired
@@ -25,8 +33,12 @@ public class QuizService {
     @Autowired
     private EmployeeQuizRepository employeeQuizRepository;
 
-    public ResponseEntity<String> setNewQuiz(long batchId, Quiz quiz) {
-        //Batch batch = authorizeBatchInstructorAccess(batchId, employeeId);
+    public ResponseEntity<String> setNewQuiz(Token token, long batchId, Quiz quiz) {
+        if (!token.getEmployeeRole().equals(Role.INSTRUCTOR)) {
+            return new ResponseEntity<String>(HttpStatus.FORBIDDEN);
+        }
+        Batch batch = batchRepository.findById(batchId).orElse(null);
+        if (batch == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         //validateQuiz(quiz);
         Date date = quiz.getDay().getDate();
         Optional<CurriculumDay> day = curriculumDayRepository.findCurriculumDayByBatchIdAndDate(batchId, date);
@@ -37,35 +49,46 @@ public class QuizService {
             curriculumDayRepository.save(quiz.getDay());
         }
         quizRepository.save(quiz);
-        return new ResponseEntity<String>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    public ResponseEntity<String> updateQuiz(long batchId, Quiz quiz) {
+    public ResponseEntity<String> updateQuiz(Token token, long batchId, Quiz quiz) {
         //Batch batch = authorizeBatchInstructorAccess(batchId, employeeId);
         //validateQuizBelongingToBatch(Batch batch, long quizId);
         quizRepository.save(quiz);
-        return new ResponseEntity<String>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    public ResponseEntity<String> removeQuiz(long batchId, long quizId) {
+    public ResponseEntity<String> removeQuiz(Token token, long batchId, long quizId) {
         //Batch batch = authorizeBatchInstructorAccess(batchId, employeeId);
         //validateQuizBelongingToBatch(Batch batch, long quizId);
         quizRepository.deleteById(quizId);
-        return new ResponseEntity<String>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    public ResponseEntity<String> setEmployeeQuiz(long employeeId, long quizId, EmployeeQuiz employeeQuiz) {
-        //assert JWT.id = employeeId
-        if (!quizRepository.existsById(quizId)) {
-            //404
-        }
+    public ResponseEntity<String> setEmployeeQuiz(Token token, long employeeId, long quizId, EmployeeQuiz employeeQuiz) {
+        if (token.getEmployeeId() != employeeId) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        if (!quizRepository.existsById(quizId)) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         employeeQuiz.setEmployee(new Employee(employeeId));
         employeeQuiz.setQuiz(new Quiz(quizId));
         employeeQuizRepository.save(employeeQuiz);
-        return new ResponseEntity<String>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    private Batch authorizeBatchInstructorAccess(long batchId, long employeeId) throws Exception {
+    public ResponseEntity<String> test() {
+        List<QuizAverage> averages = employeeQuizRepository.findQuizAveragesByBatch(1L);
+        SimpleFilterProvider filter = new SimpleFilterProvider();
+        filter.addFilter("Quiz", SimpleBeanPropertyFilter.serializeAllExcept("Topic"));
+        try {
+            return new ResponseEntity<String>(objectMapper.writer(filter).writeValueAsString(averages),
+                    HttpStatus.OK);
+        } catch (JsonProcessingException exception) {
+            exception.printStackTrace();
+            return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /*private Batch authorizeBatchInstructorAccess(long batchId, long employeeId) throws Exception {
         Batch batch = batchRepository.findById(batchId).orElseThrow(() -> new Exception("404"));
         if (batch.getInstructor().getId() != employeeId) {
             throw new Exception("409");
@@ -85,6 +108,6 @@ public class QuizService {
         if (quiz.getName() == null || quiz.getName().equals("")) {
             throw new Exception("400"); //name must be specified and non-empty
         }
-    }
+    }*/
 
 }

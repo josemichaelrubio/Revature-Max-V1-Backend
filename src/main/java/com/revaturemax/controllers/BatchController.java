@@ -5,11 +5,12 @@ import com.revaturemax.models.Employee;
 import com.revaturemax.dto.CurriculumRequest;
 import com.revaturemax.models.Quiz;
 import com.revaturemax.models.Role;
+import com.revaturemax.models.Token;
 import com.revaturemax.services.BatchService;
 import com.revaturemax.services.CurriculumService;
 import com.revaturemax.services.QuizService;
 import com.revaturemax.services.TopicService;
-import com.revaturemax.util.JwtUtil;
+import com.revaturemax.util.Tokens;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,26 +21,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/batches")
 @CrossOrigin
+@RequestMapping("/batches")
 public class BatchController {
 
     private static final Logger logger = LogManager.getLogger(BatchController.class);
 
     @Autowired
-    private JwtUtil jwtUtil;
-
+    BatchService batchService;
     @Autowired
-    private BatchService batchService;
-
+    CurriculumService curriculumService;
     @Autowired
-    private CurriculumService curriculumService;
-
+    QuizService quizService;
     @Autowired
-    private QuizService quizService;
-
-    @Autowired
-    private TopicService topicService;
+    TopicService topicService;
 
     @ResponseBody
     @GetMapping(value = "/{batch-id}", produces = "application/json")
@@ -48,52 +43,69 @@ public class BatchController {
     }
 
     @GetMapping(value = "/{batch-id}/curriculum", produces = "application/json")
-    public ResponseEntity<String> getCurriculum(@PathVariable("batch-id") long batchId) {
-        //TODO - authenticate token
+    public ResponseEntity<String> getCurriculum(@PathVariable("batch-id") long batchId,
+                                                @RequestHeader("Authorization") String authorization) {
+        Token token = Tokens.parseToken(authorization);
+        if (token == null) return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
         logger.info("GET /batches/{}/curriculum received", batchId);
-        return curriculumService.getCurriculum(batchId);
+        return curriculumService.getCurriculum(token, batchId);
     }
 
     @PutMapping(value = "/{batch-id}/curriculum", consumes = "application/json")
     public ResponseEntity<String> setCurriculum(@PathVariable("batch-id") long batchId,
-                              @RequestBody CurriculumRequest curriculumRequest) {
-        //TODO - authenticate token
+                                                @RequestBody CurriculumRequest curriculumRequest,
+                                                @RequestHeader("Authorization") String authorization)
+    {
+        Token token = Tokens.parseToken(authorization);
+        if (token == null) return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
         logger.info("PUT /batches/{}/curriculum received", batchId);
-        return curriculumService.setCurriculumDay(batchId, curriculumRequest);
+        return curriculumService.setCurriculumDay(token, batchId, curriculumRequest);
     }
 
     @PostMapping(value = "/{batch-id}/quizzes", consumes = "application/json")
     public ResponseEntity<String> postQuiz(@PathVariable("batch-id") long batchId,
-                         @RequestBody Quiz quiz) {
-        //TODO - authenticate token
+                                           @RequestBody Quiz quiz,
+                                           @RequestHeader("Authorization") String authorization)
+    {
+        Token token = Tokens.parseToken(authorization);
+        if (token == null) return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
         logger.info("POST /batches/{}/quizzes received", batchId);
-        return quizService.setNewQuiz(batchId, quiz);
+        return quizService.setNewQuiz(token, batchId, quiz);
     }
 
     @PutMapping(value = "/{batch-id}/quizzes/{quiz-id}", consumes = "application/json")
     public ResponseEntity<String> putQuiz(@PathVariable("batch-id") long batchId,
-                        @PathVariable("quiz-id") long quizId,
-                        @RequestBody Quiz quiz) {
-        //TODO - authenticate token
+                                          @PathVariable("quiz-id") long quizId,
+                                          @RequestBody Quiz quiz,
+                                          @RequestHeader("Authorization") String authorization)
+    {
+        Token token = Tokens.parseToken(authorization);
+        if (token == null) return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
         logger.info("PUT /batches/{}/quizzes/{} received", batchId, quizId);
         quiz.setId(quizId);
-        return quizService.updateQuiz(batchId, quiz);
+        return quizService.updateQuiz(token, batchId, quiz);
     }
 
     @DeleteMapping(value = "/{batch-id}/quizzes/{quiz-id}")
     public ResponseEntity<String> deleteQuiz(@PathVariable("batch-id") long batchId,
-                           @PathVariable("quiz-id") long quizId) {
-        //TODO - authenticate token
+                                             @PathVariable("quiz-id") long quizId,
+                                             @RequestHeader("Authorization") String authorization)
+    {
+        Token token = Tokens.parseToken(authorization);
+        if (token == null) return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
         logger.info("DELETE /batches/{}/quizzes/{} received", batchId, quizId);
-        return quizService.removeQuiz(batchId, quizId);
+        return quizService.removeQuiz(token, batchId, quizId);
     }
 
     @GetMapping(value = "/{batch-id}/topics/{topic-id}", produces = "application/json")
     public ResponseEntity<String> getTopic(@PathVariable("batch-id") long batchId,
-                                           @PathVariable("topic-id") long topicId) {
-        //TODO - authenticate token
+                                           @PathVariable("topic-id") long topicId,
+                                           @RequestHeader("Authorization") String authorization)
+    {
+        Token token = Tokens.parseToken(authorization);
+        if (token == null) return new ResponseEntity<String>(HttpStatus.UNAUTHORIZED);
         logger.info("GET /batches/{}/topics/{} received", batchId, topicId);
-        return topicService.getTopic(batchId, topicId);
+        return topicService.getTopic(token, batchId, topicId);
     }
 
 
@@ -106,34 +118,38 @@ public class BatchController {
      * --Andrew Shields
      */
     @GetMapping("/{batch-id}/associates")
-    public ResponseEntity<List<Employee>> getAssociates(@PathVariable("batch-id") long batchId){
+    public ResponseEntity<List<Employee>> getAssociates(@PathVariable("batch-id") long batchId) {
         logger.info("Accessing all associates listed under batch id: "+batchId);
         return ResponseEntity.ok().body(batchService.getAllAssociates(batchId));
     }
 
     @PostMapping("/{batch-id}/associates")
     public ResponseEntity<List<Employee>> postAssociates(@PathVariable("batch-id") long batchId,
-                                                         @RequestHeader("Authorization")String token,
-                                                         @RequestBody List<Employee> employees){
-        if(jwtUtil.getRoleFromToken(token)== Role.INSTRUCTOR){
+                                                         @RequestHeader("Authorization")String authorization,
+                                                         @RequestBody List<Employee> employees)
+    {
+        Token token = Tokens.parseToken(authorization);
+        if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        if (token.getEmployeeRole().equals(Role.INSTRUCTOR)) {
             logger.info("trainer adding employees: "+employees+" to batch: "+batchId);
             return ResponseEntity.ok().body(batchService.addAssociate(batchId, employees));
         }
-        return new ResponseEntity<>(new ArrayList<>(), HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(new ArrayList<>(), HttpStatus.FORBIDDEN);
     }
 
     @DeleteMapping("/{batch-id}/associates/{employee-id}")
     public ResponseEntity<HttpStatus> deleteAssociate(@PathVariable("batch-id") long batchId,
-                                                      @RequestHeader("Authorization")String token,
-                                                      @PathVariable("employee-id") long employeeId){
-        if(jwtUtil.getRoleFromToken(token)== Role.INSTRUCTOR){
+                                                      @RequestHeader("Authorization") String authorization,
+                                                      @PathVariable("employee-id") long employeeId)
+    {
+        Token token = Tokens.parseToken(authorization);
+        if (token == null) return new ResponseEntity<HttpStatus>(HttpStatus.UNAUTHORIZED);
+        if (token.getEmployeeRole().equals(Role.INSTRUCTOR)) {
             logger.info("Trainer is removing employee, "+employeeId+", from batch: "+batchId);
             batchService.deleteAssociate(batchId, employeeId);
             return new ResponseEntity<>(HttpStatus.ACCEPTED);
         }
-
-        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
-
 
 }

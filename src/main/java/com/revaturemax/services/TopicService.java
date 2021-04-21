@@ -1,18 +1,12 @@
 package com.revaturemax.services;
 
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
-import com.revaturemax.dto.TopicRequest;
 import com.revaturemax.dto.TopicResponse;
 import com.revaturemax.models.*;
-import com.revaturemax.repositories.BatchRepository;
-import com.revaturemax.repositories.TopicRepository;
-import com.revaturemax.repositories.TopicTagRepository;
-import com.revaturemax.repositories.EmployeeTopicRepository;
-import com.revaturemax.repositories.NotesRepository;
+import com.revaturemax.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +20,7 @@ import java.util.Map;
 public class TopicService {
 
     @Autowired
-    private ObjectMapper objectMapper;
+    ObjectMapper objectMapper;
     @Autowired
     TopicRepository topicRepository;
     @Autowired
@@ -38,22 +32,21 @@ public class TopicService {
     @Autowired
     NotesRepository notesRepository;
 
-    public void setEmployeeTopic(long employeeId, long topicId, EmployeeTopic employeeTopic) {
-        //assert JWT.id = employeeId
-        if (!topicRepository.existsById(topicId)) {
-            //404
-        }
+    public ResponseEntity<String> setEmployeeTopic(Token token, long employeeId, long topicId,
+                                                   EmployeeTopic employeeTopic)
+    {
+        if (token.getEmployeeId() != employeeId) return new ResponseEntity<String>(HttpStatus.FORBIDDEN);
+        if (!topicRepository.existsById(topicId)) return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
         employeeTopic.setEmployee(new Employee(employeeId));
         employeeTopic.setTopic(new Topic(topicId));
         employeeTopicRepository.save(employeeTopic);
+        return new ResponseEntity<String>(HttpStatus.OK);
     }
 
-    public ResponseEntity<String> getTopic(long batchId, long topicId) {
-        long employeeId = 1; //TODO: pull id from JWT or passed as param
+    public ResponseEntity<String> getTopic(Token token, long batchId, long topicId) {
+        long employeeId = token.getEmployeeId();
         Topic topic = topicRepository.getTopicById(topicId);
-        if (topic == null) {
-            return null; //TODO: throw 404
-        }
+        if (topic == null) return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
 
         //TODO: refactor...
         Float competency = null;
@@ -77,7 +70,7 @@ public class TopicService {
         }
         for (Map.Entry<Notes, Integer> entry : timesStarred.entrySet()) {
             Notes notes = entry.getKey();
-            topicResponse.addNotesDetails(notes.getEmployee(), notes.equals(starredNotes),
+            topicResponse.addNotesDetails(notes.getEmployee(), notes.getId(),
                     entry.getValue(), notes.getNotes());
         }
         topicResponse.sortNotes();
@@ -120,10 +113,10 @@ public class TopicService {
     }
 
 
-    public Topic update(long id, TopicRequest topic){
+    public Topic update(long id, Topic topic){
         Topic updateTopic = topicRepository.getOne(id);
         updateTopic.setTag(topic.getTag());
-        updateTopic.setName(topic.getTopicName());
+        updateTopic.setName(topic.getTag().getName());
         topicRepository.save(updateTopic);
         return updateTopic;
     }
