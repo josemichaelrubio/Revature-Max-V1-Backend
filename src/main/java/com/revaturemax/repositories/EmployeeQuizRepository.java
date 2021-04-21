@@ -2,6 +2,7 @@ package com.revaturemax.repositories;
 
 import com.revaturemax.models.EmployeeQuiz;
 import com.revaturemax.models.EmployeeQuizId;
+import com.revaturemax.projections.QuizAverage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -20,8 +21,13 @@ public interface EmployeeQuizRepository extends JpaRepository<EmployeeQuiz, Empl
     @Query("SELECT eq FROM EmployeeQuiz eq, Batch b LEFT JOIN FETCH eq.employee LEFT JOIN FETCH eq.quiz WHERE b.id = :batchId AND eq.employee MEMBER OF b.associates ORDER BY eq.quiz.id asc")
     List<EmployeeQuiz> findEmployeeQuizzesByBatchIdAndSort(@Param("batchId") long batchId);
 
+    @Query("SELECT eq FROM EmployeeQuiz eq LEFT JOIN FETCH eq.quiz WHERE eq.employee = :employee")
+    List<EmployeeQuiz> findByEmployeeEquals(@Param("employee") Employee employee);
 
-
-    List<EmployeeQuiz> findByEmployeeEquals(Employee emp);
+    @Query("SELECT new com.revaturemax.projections.QuizAverage(eq.quiz.id, AVG(eq.score), COUNT(eq.quiz.id))" +
+            " FROM EmployeeQuiz eq, Batch b" +
+            " WHERE b.id = :batchId AND eq.employee MEMBER OF b.associates" +
+            " GROUP BY eq.quiz")
+    List<QuizAverage> findQuizAveragesByBatch(@Param("batchId") long batchId);
 
 }

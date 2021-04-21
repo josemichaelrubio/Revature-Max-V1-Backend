@@ -1,16 +1,10 @@
 package com.revaturemax.models;
 
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
 import javax.persistence.*;
 import java.util.Objects;
-import java.util.stream.DoubleStream;
 
 @Entity
 @Table(name = "employee_topic")
-@Component
-@Scope("prototype")
 public class EmployeeTopic {
 
     @EmbeddedId
@@ -24,11 +18,11 @@ public class EmployeeTopic {
     @MapsId("topicId")
     private Topic topic;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fav_notes_id")
     private Notes favNotes;
 
-    private float competency;
+    private Float competency;
 
     public EmployeeTopic() {
         id = new EmployeeTopicId();
