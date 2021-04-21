@@ -1,17 +1,12 @@
 package com.revaturemax.dto;
 
-import com.fasterxml.jackson.annotation.JsonFilter;
 import com.revaturemax.models.Employee;
 import com.revaturemax.models.Topic;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-@Component
-@Scope("prototype")
 public class TopicResponse {
 
     private Topic topic;
@@ -23,28 +18,12 @@ public class TopicResponse {
         this.competency = competency;
     }
 
-    public void addNotesDetails(Employee employee, boolean starred, int timesStarred, String content) {
-        this.notes.add(new NotesDetails(employee, starred, timesStarred, content));
+    public void addNotesDetails(Employee employee, long notesId, int timesStarred, String content) {
+        this.notes.add(new NotesDetails(employee, notesId, timesStarred, content));
     }
 
-    /**
-     * Sorts the notes by timesStarred descending. If a notes entry is starred, it is placed at the front.
-     */
     public void sortNotes() {
-        NotesDetails starred = null;
-        for (NotesDetails nd : notes) {
-            if (nd.starred) {
-                starred = nd;
-                break;
-            }
-        }
-        if (starred != null) {
-            notes.remove(starred);
-            notes.sort(Comparator.comparing(NotesDetails::getTimesStarred).reversed());
-            notes.add(0, starred);
-        } else {
-            notes.sort(Comparator.comparing(NotesDetails::getTimesStarred).reversed());
-        }
+        notes.sort(Comparator.comparing(NotesDetails::getTimesStarred).reversed());
     }
 
     public Topic getTopic() {
@@ -62,13 +41,13 @@ public class TopicResponse {
     private class NotesDetails {
 
         private Employee employee;
-        private boolean starred;
+        private long notesId;
         private int timesStarred;
         private String content;
 
-        public NotesDetails(Employee employee, boolean starred, int timesStarred, String content) {
+        public NotesDetails(Employee employee, long notesId, int timesStarred, String content) {
             this.employee = employee;
-            this.starred = starred;
+            this.notesId = notesId;
             this.timesStarred = timesStarred;
             this.content = content;
         }
@@ -77,8 +56,8 @@ public class TopicResponse {
             return employee;
         }
 
-        public boolean isStarred() {
-            return starred;
+        public long getNotesId() {
+            return notesId;
         }
 
         public int getTimesStarred() {

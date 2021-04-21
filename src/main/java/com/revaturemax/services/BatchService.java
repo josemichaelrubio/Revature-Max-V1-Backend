@@ -1,7 +1,5 @@
 package com.revaturemax.services;
 
-
-
 import com.revaturemax.models.Batch;
 import com.revaturemax.models.Employee;
 import com.revaturemax.models.EmployeeTopic;
@@ -18,23 +16,18 @@ import java.util.*;
 @Service
 public class BatchService {
 
-    Logger logger = LogManager.getLogger(BatchService.class);
+    private static final Logger logger = LogManager.getLogger(BatchService.class);
 
     @Autowired
     private BatchRepository batchRepository;
-
     @Autowired
     private QuizRepository quizRepository;
-
     @Autowired
     private CurriculumDayRepository curriculumDayRepository;
-
     @Autowired
     private EmployeeQuizRepository employeeQuizRepository;
-
     @Autowired
     private EmployeeRepository employeeRepository;
-
     @Autowired
     private EmployeeTopicRepository employeeTopicRepository;
 
@@ -189,7 +182,6 @@ public class BatchService {
         }
 
     }
-
 
     // All methods for manipulating associates listed under batch
 

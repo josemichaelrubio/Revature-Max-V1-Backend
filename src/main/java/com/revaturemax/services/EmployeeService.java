@@ -2,9 +2,9 @@ package com.revaturemax.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.revaturemax.dto.EmployeeQuizResponse;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.revaturemax.dto.EmployeeResponse;
-import com.revaturemax.dto.EmployeeTopicResponse;
 import com.revaturemax.models.*;
 import com.revaturemax.repositories.EmployeeQuizRepository;
 import com.revaturemax.repositories.EmployeeRepository;
@@ -14,13 +14,12 @@ import com.revaturemax.util.Passwords;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -31,7 +30,7 @@ public class EmployeeService {
     @Autowired
     ObjectMapper objectMapper;
     @Autowired
-    EmployeeRepository empRepo;
+    EmployeeRepository employeeRepository;
     @Autowired
     PasswordRepository passwordRepository;
     @Autowired
@@ -39,86 +38,73 @@ public class EmployeeService {
     @Autowired
     EmployeeTopicRepository empTopicRepo;
 
+    public ResponseEntity<String> getEmployeeInfo(Token token, long employeeId)
+    {
+        Employee employee = employeeRepository.findById(employeeId).orElse(null);
+        if (employee == null) return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+        EmployeeResponse response = new EmployeeResponse(employee);
 
-    public Employee getById(long id){
-        return empRepo.getOne(id);
-    }
+        List<EmployeeQuiz> quizzes = empQuizRepo.findByEmployeeEquals(employee);
+        for (EmployeeQuiz quizAttempt : quizzes) {
+            response.addQuizDetails(quizAttempt.getQuiz(), quizAttempt.getScore());
+        }
 
+        List<EmployeeTopic> topics =  empTopicRepo.findByEmployeeEquals(employee);
+        for (EmployeeTopic et : topics) {
+            response.addTopicDetails(et.getTopic(), et.getCompetency());
+        }
 
-    public EmployeeResponse getEmployeeInfo(long id, EmployeeResponse employeeResponse) {
-        Employee emp = empRepo.getOne(id);
-
-        employeeResponse.setName(emp.getName());
-
-        employeeResponse.setRole(emp.getRole());
-
-        return employeeResponse;
-    }
-
-    @Transactional
-    public ResponseEntity<String> createNewEmployee(String name, String email, String password) {
-        //validate params
-        Employee employee = new Employee(Role.ASSOCIATE, name, email);
-        byte[] salt = Passwords.getNewPasswordSalt();
-        byte[] hash = Passwords.getPasswordHash(password, salt);
-        employee = empRepo.save(employee);
-        passwordRepository.save(new Password(employee, salt, hash));
         try {
-            return new ResponseEntity<String>(objectMapper.writer().writeValueAsString(employee), HttpStatus.CREATED);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            SimpleFilterProvider filter = new SimpleFilterProvider();
+            filter.addFilter("Quiz", SimpleBeanPropertyFilter.serializeAllExcept("Topic"));
+            filter.addFilter("Topic", SimpleBeanPropertyFilter.serializeAll());
+            return new ResponseEntity<String>(objectMapper.writer(filter).writeValueAsString(response),
+                    HttpStatus.OK);
+        } catch (JsonProcessingException exception) {
+            exception.printStackTrace();
             return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+    @Transactional
+    public ResponseEntity<String> createNewEmployee(String name, String email, String password)
+    {
+        if (!validName(name)) return new ResponseEntity<String>("Bad name", HttpStatus.BAD_REQUEST);
+        if (!validEmail(email)) return new ResponseEntity<String>("Bad email", HttpStatus.BAD_REQUEST);
+        if (!validPassword(password)) return new ResponseEntity<String>("Bad password", HttpStatus.BAD_REQUEST);
 
-    public void deleteEmployee(long id) {
-        empRepo.deleteById(id);
-    }
-
-//    public void updateEmployee(Employee employee){return employeeRepository.save(employee);}
-
-    public List<EmployeeQuizResponse> getQuizzesById(long id){
-        Employee emp = empRepo.getOne(id);
-        List<EmployeeQuiz> quizzes = empQuizRepo.findByEmployeeEquals(emp);
-        List<EmployeeQuizResponse> quizResponses = new ArrayList<>();
-        for(EmployeeQuiz q : quizzes){
-            quizResponses.add(new EmployeeQuizResponse(q.getId().getQuizId(), q.getScore()));
+        Employee employee = new Employee(Role.ASSOCIATE, name, email);
+        try {
+            employee = employeeRepository.save(employee);
+        } catch (DataIntegrityViolationException e) {
+            return new ResponseEntity<String>("The provided email is already taken", HttpStatus.CONFLICT);
         }
-        return quizResponses;
-    }
 
-    public List<EmployeeTopicResponse> getTopicsById(long id){
-        Employee emp = empRepo.getOne(id);
-        List<EmployeeTopic> topics =  empTopicRepo.findByEmployeeEquals(emp);
-        List<EmployeeTopicResponse> topicResponses = new ArrayList<>();
-        for(EmployeeTopic t : topics){
-            topicResponses.add(new EmployeeTopicResponse(t.getTopic().getName(), t.getTopic().getTag().getName(), t.getCompetency()));
+        byte[] salt = Passwords.getNewPasswordSalt();
+        byte[] hash = Passwords.getPasswordHash(password, salt);
+        passwordRepository.save(new Password(employee, salt, hash));
+        try {
+            return new ResponseEntity<String>(objectMapper.writer().writeValueAsString(employee), HttpStatus.CREATED);
+        } catch (JsonProcessingException e) {
+            return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return topicResponses;
-    }
-//
-//    public EmployeeTopic update(EmployeeTopicId id, EmployeeTopicResponse empTopic){
-//        EmployeeTopic updateTopic = empTopicRepo.getOne(id);
-//        updateTopic.setCompetency(empTopic.getCompetency());
-//        updateTopic.setFavNotes(empTopic.;
-//        empTopicRepo.save(updateTopic);
-//        return updateTopic;
-//    }
-
-    public Employee getByEmail(String email){
-        return empRepo.findByEmail(email);
     }
 
-    public boolean checkPassByEmployee(Employee emp, String pass){
+    /*public void deleteEmployee(long id) {
+        employeeRepository.deleteById(id);
+    }*/
 
-        Password empPass = passwordRepository.findByEmployee(emp);
+    private boolean validName(String name) {
+        return name != null && !name.equals("") && name.length() < 256;
+    }
 
-        byte[] salt = empPass.getSalt();
-        byte[] hash = empPass.getHash();
+    private boolean validEmail(String email) {
+        if (email == null) return false;
+        return email.matches("^\\S+@\\S+\\.\\S+$") && email.length() < 256;
+    }
 
-        byte[] inputHash = Passwords.getPasswordHash(pass, salt);
-        return Arrays.equals(hash, inputHash);
+    private boolean validPassword(String password) {
+        return password != null && !password.equals("");
     }
 
 }

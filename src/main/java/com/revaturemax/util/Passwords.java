@@ -4,7 +4,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
-public class Passwords {
+public final class Passwords {
 
     public static byte[] getNewPasswordSalt() {
         byte[] passwordSalt = new byte[32];
