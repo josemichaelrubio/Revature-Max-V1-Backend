@@ -4,23 +4,22 @@ import com.revaturemax.models.Quiz;
 
 public class QuizAverage {
 
-    private Quiz quiz;
+    private String quizName;
     private Double averageScore;
     private Long scoresCounted;
 
-    public QuizAverage(long quizId, Double averageScore, Long scoresCounted) {
-        quiz = new Quiz();
-        quiz.setId(quizId);
+    public QuizAverage(String quizName, Double averageScore, Long scoresCounted) {
+        this.quizName = quizName;
         this.averageScore = averageScore;
         this.scoresCounted = scoresCounted;
     }
 
-    public Quiz getQuiz() {
-        return quiz;
+    public String getQuizName() {
+        return quizName;
     }
 
-    public void setQuiz(Quiz quiz) {
-        this.quiz = quiz;
+    public void setQuizName(String quizName) {
+        this.quizName = quizName;
     }
 
     public Double getAverageScore() {
