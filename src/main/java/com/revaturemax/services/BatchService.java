@@ -15,6 +15,8 @@ import com.revaturemax.models.EmployeeQuiz;
 import com.revaturemax.projections.BatchSummary;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import javax.persistence.EntityNotFoundException;
 import java.util.*;
 
 @Service
@@ -98,13 +100,26 @@ public class BatchService {
 
     public List<Employee> addAssociate(long batchId, List<Employee> employees){
         Batch batch = batchRepository.getBatchById(batchId);
+        List<Employee> newAssociates = new ArrayList<>();
         if(batch!=null){
 
             for(Employee e : employees){
-                batch.addAssociate(e);
-            }
+                if(e.getName()!=null){
+                    newAssociates.add(e);
+                }else{
+                    try{
+                        e = employeeRepository.findByEmail(e.getEmail());// reassign the employee object with the one found by email stored within
+                        newAssociates.add(e);
+                    } catch (EntityNotFoundException exception){
+                        employees.remove(e);
+                    }
+                }
 
-            return batchRepository.save(batch).getAssociates();
+
+            }
+            batch.setAssociates(newAssociates);
+            batchRepository.save(batch);
+            return employees;
         }
         return new ArrayList<>();
     }
