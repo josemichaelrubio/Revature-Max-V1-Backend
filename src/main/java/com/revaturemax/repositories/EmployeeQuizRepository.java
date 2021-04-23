@@ -24,10 +24,10 @@ public interface EmployeeQuizRepository extends JpaRepository<EmployeeQuiz, Empl
     @Query("SELECT eq FROM EmployeeQuiz eq LEFT JOIN FETCH eq.quiz WHERE eq.employee = :employee")
     List<EmployeeQuiz> findByEmployeeEquals(@Param("employee") Employee employee);
 
-    @Query("SELECT new com.revaturemax.projections.QuizAverage(eq.quiz.name, AVG(eq.score), COUNT(eq.quiz.id))" +
+    @Query("SELECT new com.revaturemax.projections.QuizAverage(eq.quiz.id, eq.quiz.name, AVG(eq.score), COUNT(eq.quiz.id))" +
             " FROM EmployeeQuiz eq, Batch b" +
             " WHERE b.id = :batchId AND eq.employee MEMBER OF b.associates" +
-            " GROUP BY eq.quiz.name")
+            " GROUP BY eq.quiz.name, eq.quiz.id")
     List<QuizAverage> findQuizAveragesByBatch(@Param("batchId") long batchId);
 
 }
