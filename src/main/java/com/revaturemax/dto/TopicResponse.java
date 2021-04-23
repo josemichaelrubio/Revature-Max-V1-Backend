@@ -11,6 +11,7 @@ public class TopicResponse {
 
     private Topic topic;
     private Float competency;
+    private Long starredNotesId;
     private List<NotesDetails> notes = new ArrayList<>();
 
     public TopicResponse(Topic topic, Float competency) {
@@ -32,6 +33,14 @@ public class TopicResponse {
 
     public Float getCompetency() {
         return competency;
+    }
+
+    public Long getStarredNotesId() {
+        return starredNotesId;
+    }
+
+    public void setStarredNotesId(Long starredNotesId) {
+        this.starredNotesId = starredNotesId;
     }
 
     public List<NotesDetails> getNotes() {
