@@ -14,7 +14,7 @@ public interface QuizRepository extends JpaRepository<Quiz, Long> {
 
     QuizNameOnly getById(long id);
 
-    @Query("SELECT q FROM Quiz q LEFT JOIN FETCH q.topics AS t LEFT JOIN FETCH t.tag WHERE q.day.batch.id = :batchId")
-    List<Quiz> findQuizzesByBatchId(@Param("batchId") long batchId);
+    @Query("SELECT DISTINCT q FROM Quiz q LEFT JOIN FETCH q.topics AS t LEFT JOIN FETCH t.tag WHERE q.day.batch.id = :batchId")
+    List<Quiz> findQuizzesByBatch(@Param("batchId") long batchId);
 
 }
