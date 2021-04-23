@@ -3,14 +3,24 @@ package com.revaturemax.projections;
 
 public class TagAverage {
 
+    private Long id;
     private String tagName;
     private Double averageCompetency;
     private Long competenciesCounted;
 
-    public TagAverage(String tagName, Double averageCompetency, Long competenciesCounted) {
+    public TagAverage(Long id, String tagName, Double averageCompetency, Long competenciesCounted) {
+        this.id = id;
         this.tagName = tagName;
         this.averageCompetency = averageCompetency;
         this.competenciesCounted = competenciesCounted;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getTagName() {
