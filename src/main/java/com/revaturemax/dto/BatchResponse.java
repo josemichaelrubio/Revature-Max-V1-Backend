@@ -1,6 +1,8 @@
 package com.revaturemax.dto;
 
 import com.revaturemax.projections.BatchSummary;
+import com.revaturemax.projections.QuizAverage;
+import com.revaturemax.projections.TagAverage;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import java.io.Serializable;
@@ -14,20 +16,15 @@ public class BatchResponse implements Serializable {
 
     private BatchSummary batch;
     private List<QuizAverage> quizAverage = new ArrayList<>();
-    private List<CompetencyAverage> competencyAverage = new ArrayList<>();
+    private List<TagAverage> competencyAverage = new ArrayList<>();
 
     public BatchResponse() {}
 
-    public BatchResponse(BatchSummary batch) {
+    public BatchResponse(BatchSummary batch, List<QuizAverage> quizAverage, List<TagAverage> competencyAverage) {
         this.batch = batch;
-    }
+        this.quizAverage = quizAverage;
+        this.competencyAverage = competencyAverage;
 
-    public void addQuizAverage(String quizName, String average, String count) {
-        this.quizAverage.add(new QuizAverage(quizName, average, count));
-    }
-
-    public void addCompetencyAverage(String topicName, String average, String count) {
-        this.competencyAverage.add(new CompetencyAverage(topicName, average, count));
     }
 
     public BatchSummary getBatch() {
@@ -46,11 +43,11 @@ public class BatchResponse implements Serializable {
         this.quizAverage = quizAverage;
     }
 
-    public List<CompetencyAverage> getCompetencyAverage() {
+    public List<TagAverage> getCompetencyAverage() {
         return competencyAverage;
     }
 
-    public void setCompetencyAverage(List<CompetencyAverage> competencyAverage) {
+    public void setCompetencyAverage(List<TagAverage> competencyAverage) {
         this.competencyAverage = competencyAverage;
     }
 
@@ -76,7 +73,7 @@ public class BatchResponse implements Serializable {
                 '}';
     }
 
-    @Component
+    /* @Component
     private static class QuizAverage implements Serializable {
         private String quizName;
         private String average;
@@ -84,8 +81,8 @@ public class BatchResponse implements Serializable {
 
         public QuizAverage() {}
 
-        public QuizAverage(String topicName, String average, String count) {
-            this.quizName = topicName;
+        public QuizAverage(String quizName, String average, String count) {
+            this.quizName = quizName;
             this.average = average;
             this.count = count;
         }
@@ -198,5 +195,5 @@ public class BatchResponse implements Serializable {
                     ", count='" + count + '\'' +
                     '}';
         }
-    }
+    } */
 }

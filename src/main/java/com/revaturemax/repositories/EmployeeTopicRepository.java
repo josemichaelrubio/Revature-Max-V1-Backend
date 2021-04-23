@@ -36,10 +36,10 @@ public interface EmployeeTopicRepository extends JpaRepository<EmployeeTopic, Em
             " GROUP BY et.topic")
     List<TopicAverage> findTopicAveragesByBatch(@Param("batchId") long batchId);
 
-    @Query("SELECT new com.revaturemax.projections.TagAverage(et.topic.tag.id, AVG(et.competency), COUNT(et.topic.tag.id))" +
+    @Query("SELECT new com.revaturemax.projections.TagAverage(et.topic.tag.name, AVG(et.competency), COUNT(et.topic.tag.id))" +
             " FROM EmployeeTopic et, Batch b" +
             " WHERE b.id = :batchId AND et.employee MEMBER OF b.associates" +
-            " GROUP BY et.topic.tag")
+            " GROUP BY et.topic.tag.name")
     List<TagAverage> findTagAveragesByBatch(@Param("batchId") long batchId);
 
 }
