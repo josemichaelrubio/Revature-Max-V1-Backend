@@ -1,26 +1,24 @@
 package com.revaturemax.projections;
 
-import com.revaturemax.models.TopicTag;
 
 public class TagAverage {
 
-    private TopicTag tag;
+    private String tagName;
     private Double averageCompetency;
     private Long competenciesCounted;
 
-    public TagAverage(long tagId, Double averageCompetency, Long competenciesCounted) {
-        tag = new TopicTag();
-        tag.setId(tagId);
+    public TagAverage(String tagName, Double averageCompetency, Long competenciesCounted) {
+        this.tagName = tagName;
         this.averageCompetency = averageCompetency;
         this.competenciesCounted = competenciesCounted;
     }
 
-    public TopicTag getTag() {
-        return tag;
+    public String getTagName() {
+        return tagName;
     }
 
-    public void setTag(TopicTag tag) {
-        this.tag = tag;
+    public void setTagName(String tagName) {
+        this.tagName = tagName;
     }
 
     public Double getAverageCompetency() {

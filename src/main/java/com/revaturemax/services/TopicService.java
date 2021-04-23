@@ -12,9 +12,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class TopicService {
@@ -25,8 +25,6 @@ public class TopicService {
     TopicRepository topicRepository;
     @Autowired
     TopicTagRepository topicTagRepository;
-    @Autowired
-    BatchRepository batchRepository;
     @Autowired
     EmployeeTopicRepository employeeTopicRepository;
     @Autowired
@@ -48,7 +46,6 @@ public class TopicService {
         Topic topic = topicRepository.getTopicById(topicId);
         if (topic == null) return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
 
-        //TODO: refactor...
         Float competency = null;
         Notes starredNotes = null;
         EmployeeTopic et = employeeTopicRepository.getEmployeeTopicById(new EmployeeTopicId(employeeId, topicId));
@@ -57,16 +54,12 @@ public class TopicService {
             starredNotes = et.getFavNotes();
         }
         TopicResponse topicResponse = new TopicResponse(topic, competency);
-        Map<Notes, Integer> timesStarred = new HashMap<>();
-        for (Employee associate : batchRepository.getBatchById(batchId).getAssociates()) {
-            Notes notes = notesRepository.getNotesByEmployeeIdAndTopicId(associate.getId(), topicId);
-            if (notes != null && !timesStarred.containsKey(notes)) {
-                timesStarred.put(notes, 0);
-            }
-            et = employeeTopicRepository.getEmployeeTopicById(new EmployeeTopicId(associate.getId(), topicId));
-            if (et != null && et.getFavNotes() != null) {
-                timesStarred.put(et.getFavNotes(), timesStarred.getOrDefault(et.getFavNotes(), 0) + 1);
-            }
+        if (starredNotes != null) topicResponse.setStarredNotesId(starredNotes.getId());
+
+        List<Notes> batchNotes = notesRepository.findNotesByBatchAndTopic(batchId, topicId);
+        Map<Notes, Integer> timesStarred = batchNotes.stream().collect(Collectors.toMap(n -> n, i -> 0));
+        for (Notes n : employeeTopicRepository.getStarredNotesByBatchAndTopic(batchId, topicId)) {
+            timesStarred.put(n, timesStarred.get(n) + 1);
         }
         for (Map.Entry<Notes, Integer> entry : timesStarred.entrySet()) {
             Notes notes = entry.getKey();
@@ -75,14 +68,18 @@ public class TopicService {
         }
         topicResponse.sortNotes();
 
+        return writeTopicResponse(topicResponse);
+    }
+
+    private ResponseEntity<String> writeTopicResponse(TopicResponse response) {
         try {
             SimpleFilterProvider filter = new SimpleFilterProvider();
             filter.addFilter("Topic", SimpleBeanPropertyFilter.serializeAll());
-            return new ResponseEntity<String>(objectMapper.writer(filter).writeValueAsString(topicResponse),
+            return new ResponseEntity<>(objectMapper.writer(filter).writeValueAsString(response),
                     HttpStatus.OK);
         } catch (JsonProcessingException exception) {
             exception.printStackTrace();
-            return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
