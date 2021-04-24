@@ -6,10 +6,7 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.revaturemax.dto.EmployeeResponse;
 import com.revaturemax.models.*;
-import com.revaturemax.repositories.EmployeeQuizRepository;
-import com.revaturemax.repositories.EmployeeRepository;
-import com.revaturemax.repositories.EmployeeTopicRepository;
-import com.revaturemax.repositories.PasswordRepository;
+import com.revaturemax.repositories.*;
 import com.revaturemax.util.Passwords;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,6 +15,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.UnexpectedRollbackException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -34,29 +32,39 @@ public class EmployeeService {
     @Autowired
     PasswordRepository passwordRepository;
     @Autowired
-    EmployeeQuizRepository empQuizRepo;
+    BatchRepository batchRepository;
     @Autowired
-    EmployeeTopicRepository empTopicRepo;
+    QuizRepository quizRepository;
+    @Autowired
+    EmployeeQuizRepository employeeQuizRepository;
+    @Autowired
+    EmployeeTopicRepository employeeTopicRepository;
 
     public ResponseEntity<String> getEmployeeInfo(Token token, long employeeId)
     {
+        if (token.getEmployeeId() != employeeId) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         Employee employee = employeeRepository.findById(employeeId).orElse(null);
-        if (employee == null) return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+        if (employee == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
         EmployeeResponse response = new EmployeeResponse(employee);
+        Batch batch = batchRepository.getBatchForAssociate(employee);
+        if (batch == null) return writeEmployeeResponse(response);
 
-        List<EmployeeQuiz> quizzes = empQuizRepo.findByEmployeeEquals(employee);
-        for (EmployeeQuiz quizAttempt : quizzes) {
-            response.addQuizDetails(quizAttempt.getQuiz(), quizAttempt.getScore());
-        }
+        List<Quiz> quizzes = quizRepository.findQuizzesByBatch(batch.getId());
+        for (Quiz quiz : quizzes) response.addQuiz(quiz);
+        List<EmployeeQuiz> quizScores = employeeQuizRepository.findByEmployeeEquals(employee);
+        for (EmployeeQuiz quizScore : quizScores) response.addQuizScore(quizScore.getQuiz(), quizScore.getScore());
 
-        List<EmployeeTopic> topics =  empTopicRepo.findByEmployeeEquals(employee);
-        for (EmployeeTopic et : topics) {
-            response.addTopicDetails(et.getTopic(), et.getCompetency());
-        }
+        List<EmployeeTopic> topics =  employeeTopicRepository.findByEmployeeEquals(employee);
+        for (EmployeeTopic et : topics) response.addTopicCompetency(et.getTopic(), et.getCompetency());
 
+        return writeEmployeeResponse(response);
+    }
+
+    private ResponseEntity<String> writeEmployeeResponse(EmployeeResponse response) {
         try {
             SimpleFilterProvider filter = new SimpleFilterProvider();
-            filter.addFilter("Quiz", SimpleBeanPropertyFilter.serializeAllExcept("Topic"));
+            filter.addFilter("Quiz", SimpleBeanPropertyFilter.serializeAll());
             filter.addFilter("Topic", SimpleBeanPropertyFilter.serializeAll());
             return new ResponseEntity<String>(objectMapper.writer(filter).writeValueAsString(response),
                     HttpStatus.OK);
@@ -76,7 +84,7 @@ public class EmployeeService {
         Employee employee = new Employee(Role.ASSOCIATE, name, email);
         try {
             employee = employeeRepository.save(employee);
-        } catch (DataIntegrityViolationException e) {
+        } catch (UnexpectedRollbackException e) {
             return new ResponseEntity<String>("The provided email is already taken", HttpStatus.CONFLICT);
         }
 

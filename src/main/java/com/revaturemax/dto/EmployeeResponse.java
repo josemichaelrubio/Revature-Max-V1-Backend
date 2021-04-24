@@ -10,7 +10,7 @@ import java.util.List;
 public class EmployeeResponse {
 
     private Employee employee;
-    private List<QuizDetails> quizzes = new ArrayList<>();
+    private List<QuizScore> quizzes = new ArrayList<>();
     private List<TopicDetails> topics = new ArrayList<>();
 
     public EmployeeResponse(Employee employee) {
@@ -21,38 +21,49 @@ public class EmployeeResponse {
         return employee;
     }
 
-    public List<QuizDetails> getQuizzes() {
+    public List<QuizScore> getQuizzes() {
         return quizzes;
     }
 
-    public void addQuizDetails(Quiz quiz, float score) {
-        this.quizzes.add(new QuizDetails(quiz, score));
+    public void addQuiz(Quiz quiz) {
+        this.quizzes.add(new QuizScore(quiz));
+    }
+
+    public void addQuizScore(Quiz quiz, Float score) {
+        for (QuizScore qs : quizzes) {
+            if (qs.getQuiz().getId() == quiz.getId()) {
+                qs.setScore(score);
+            }
+        }
     }
 
     public List<TopicDetails> getTopics() {
         return topics;
     }
 
-    public void addTopicDetails(Topic topic, float competency) {
+    public void addTopicCompetency(Topic topic, float competency) {
         this.topics.add(new TopicDetails(topic, competency));
     }
 
-    private class QuizDetails {
+    private class QuizScore {
 
         private Quiz quiz;
-        private float score;
+        private Float score;
 
-        public QuizDetails(Quiz quiz, float score) {
+        public QuizScore(Quiz quiz) {
             this.quiz = quiz;
-            this.score = score;
         }
 
         public Quiz getQuiz() {
             return quiz;
         }
 
-        public float getScore() {
+        public Float getScore() {
             return score;
+        }
+
+        public void setScore(Float score) {
+            this.score = score;
         }
 
     }
@@ -60,9 +71,9 @@ public class EmployeeResponse {
     private class TopicDetails {
 
         private Topic topic;
-        private float competency;
+        private Float competency;
 
-        public TopicDetails(Topic topic, float competency) {
+        public TopicDetails(Topic topic, Float competency) {
             this.topic = topic;
             this.competency = competency;
         }
@@ -71,7 +82,7 @@ public class EmployeeResponse {
             return topic;
         }
 
-        public float getCompetency() {
+        public Float getCompetency() {
             return competency;
         }
 
