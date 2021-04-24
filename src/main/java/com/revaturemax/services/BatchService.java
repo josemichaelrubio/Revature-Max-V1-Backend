@@ -15,6 +15,7 @@ import com.revaturemax.models.EmployeeQuiz;
 import com.revaturemax.projections.BatchSummary;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.*;
@@ -124,6 +125,7 @@ public class BatchService {
         return new ArrayList<>();
     }
 
+    @Transactional
     public void deleteAssociate(long batchId, long empId){
         Batch batch = batchRepository.getBatchById(batchId);
         Employee emp = employeeRepository.getOne(empId);
