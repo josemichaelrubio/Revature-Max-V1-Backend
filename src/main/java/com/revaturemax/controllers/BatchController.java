@@ -143,7 +143,7 @@ public class BatchController {
                                                       @PathVariable("employee-id") long employeeId)
     {
         Token token = Tokens.parseToken(authorization);
-        if (token == null) return new ResponseEntity<HttpStatus>(HttpStatus.UNAUTHORIZED);
+        if (token == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         if (token.getEmployeeRole().equals(Role.INSTRUCTOR)) {
             logger.info("Trainer is removing employee, "+employeeId+", from batch: "+batchId);
             batchService.deleteAssociate(batchId, employeeId);
