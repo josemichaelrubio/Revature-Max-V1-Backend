@@ -6,7 +6,10 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.revaturemax.dto.TopicResponse;
 import com.revaturemax.models.*;
+import com.revaturemax.projections.Topics;
 import com.revaturemax.repositories.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +32,8 @@ public class TopicService {
     EmployeeTopicRepository employeeTopicRepository;
     @Autowired
     NotesRepository notesRepository;
+
+    Logger logger = LogManager.getLogger(TopicService.class);
 
     public ResponseEntity<String> setEmployeeTopic(Token token, long employeeId, long topicId,
                                                    EmployeeTopic employeeTopic)
@@ -101,8 +106,8 @@ public class TopicService {
     // Topic CRUD methods in the service layer
 
 
-    public List<Topic> getAll(){
-        return topicRepository.findAll();
+    public List<Topics> getAll(){
+        return topicRepository.getAllTopics();
     }
 
     public Topic create(Topic topic){

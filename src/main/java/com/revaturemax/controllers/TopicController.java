@@ -4,6 +4,7 @@ import com.revaturemax.models.Role;
 import com.revaturemax.models.Token;
 import com.revaturemax.models.Topic;
 import com.revaturemax.models.TopicTag;
+import com.revaturemax.projections.Topics;
 import com.revaturemax.services.TopicService;
 import com.revaturemax.util.Tokens;
 import org.apache.logging.log4j.LogManager;
@@ -50,8 +51,9 @@ public class TopicController {
      */
 
     @GetMapping
-    public ResponseEntity<List<Topic>> getAllTopics(){
-        return ResponseEntity.ok().body(topicService.getAll());
+    public ResponseEntity<List<Topics>> getAllTopics(){
+        List<Topics> topics = topicService.getAll();
+        return ResponseEntity.ok().body(topics);
     }
 
     @PostMapping
