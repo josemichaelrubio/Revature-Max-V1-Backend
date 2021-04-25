@@ -9,6 +9,7 @@ import com.revaturemax.models.Batch;
 import com.revaturemax.models.CurriculumDay;
 import com.revaturemax.models.Role;
 import com.revaturemax.models.Token;
+import com.revaturemax.repositories.BatchRepository;
 import com.revaturemax.repositories.CurriculumDayRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,9 +29,12 @@ public class CurriculumService {
     private ObjectMapper objectMapper;
     @Autowired
     private CurriculumDayRepository curriculumDayRepository;
+    @Autowired
+    private BatchRepository batchRepository;
 
     @Transactional
-    public ResponseEntity<String> getCurriculum(Token token, long batchId) {
+    public ResponseEntity<String> getCurriculum(Token token, long batchId)
+    {
         //check token.id within batch associates
         List<CurriculumDay> curriculum = curriculumDayRepository.findCurriculumByBatchId(batchId);
         curriculum = curriculumDayRepository.findCurriculumTopics(curriculum);
@@ -38,21 +42,23 @@ public class CurriculumService {
 
         SimpleFilterProvider filter = new SimpleFilterProvider();
         filter.addFilter("Quiz", SimpleBeanPropertyFilter.serializeAllExcept("Topic"));
+        filter.addFilter("Topic", SimpleBeanPropertyFilter.serializeAll());
         try {
-            return new ResponseEntity<String>(objectMapper.writer(filter).writeValueAsString(curriculum),
+            return new ResponseEntity<>(objectMapper.writer(filter).writeValueAsString(curriculum),
                     HttpStatus.OK);
         } catch (JsonProcessingException exception) {
             exception.printStackTrace();
-            return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    public ResponseEntity<String> setCurriculumDay(Token token, long batchId, CurriculumRequest curriculumRequest) {
+    public ResponseEntity<String> setCurriculumDay(Token token, long batchId, CurriculumRequest curriculumRequest)
+    {
         if (!token.getEmployeeRole().equals(Role.INSTRUCTOR)) {
-            return new ResponseEntity<String>(HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
         //Batch batch = batchRepository.findById(batchId).orElse(null);
-        //if (batch == null) return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+        //if (batch == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         Date date = curriculumRequest.getDate();
         Optional<CurriculumDay> day = curriculumDayRepository.findCurriculumDayByBatchIdAndDate(batchId, date);
         if (day.isPresent()) {
@@ -65,7 +71,7 @@ public class CurriculumService {
             newDay.setTopics(curriculumRequest.getTopics());
             curriculumDayRepository.save(newDay);
         }
-        return new ResponseEntity<String>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }
