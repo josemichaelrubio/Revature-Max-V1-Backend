@@ -29,6 +29,12 @@ public class Topic {
         this.id = id;
     }
 
+    public Topic(Long id, String name, TopicTag tag) {
+        this.id = id;
+        this.name = name;
+        this.tag = tag;
+    }
+
     public Topic(String name) {
         this.name=name;
     }
